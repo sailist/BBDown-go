@@ -40,26 +40,27 @@ func newTestFactory() *Factory {
 	return NewFactory(client, cfg, logger)
 }
 
-func TestFactory_ReturnsErrorForUnimplementedPrefixes(t *testing.T) {
+func TestFactory_ReturnsFetcherForImplementedPrefixes(t *testing.T) {
 	factory := newTestFactory()
 	cases := []struct {
-		id      string
-		useIntl bool
+		id         string
+		useIntl    bool
+		expectType string
 	}{
-		{"cheese123", false},
-		{"ep123", false},
-		{"ep123", true},
-		{"mid123", false},
-		{"listBizId123", false},
-		{"seriesBizId123", false},
-		{"favId123", false},
-		{"BV123", false},
+		{"mid:123", false, "*fetcher.SpaceVideoFetcher"},
+		{"listBizId:123", false, "*fetcher.MediaListFetcher"},
+		{"seriesBizId:123", false, "*fetcher.SeriesListFetcher"},
+		{"favId:123:456", false, "*fetcher.FavListFetcher"},
 	}
 
 	for _, tc := range cases {
 		f, err := factory.Create(tc.id, tc.useIntl)
-		if err == nil {
-			t.Errorf("Create(%q, %v) expected error, got fetcher %v", tc.id, tc.useIntl, f)
+		if err != nil {
+			t.Errorf("Create(%q, %v) expected no error, got %v", tc.id, tc.useIntl, err)
+			continue
+		}
+		if f == nil {
+			t.Errorf("Create(%q, %v) returned nil fetcher", tc.id, tc.useIntl)
 		}
 	}
 }
@@ -73,6 +74,11 @@ func TestFactory_ReturnsErrorForEmptyOrInvalid(t *testing.T) {
 		{"", false},
 		{"unknown", false},
 		{"random_prefix", false},
+		{"mid123", false},
+		{"listBizId123", false},
+		{"seriesBizId123", false},
+		{"favId123", false},
+		{"BV123", false},
 	}
 
 	for _, tc := range cases {

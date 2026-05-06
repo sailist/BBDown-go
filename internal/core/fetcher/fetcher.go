@@ -43,14 +43,14 @@ func (f *Factory) Create(id string, useIntl bool) (Fetcher, error) {
 			return NewIntlBangumiFetcher(f.client, f.cfg, f.logger), nil
 		}
 		return NewBangumiFetcher(f.client, f.cfg, f.logger), nil
-	case strings.HasPrefix(id, "mid"):
-		return nil, errors.New("not implemented")
-	case strings.HasPrefix(id, "listBizId"):
-		return nil, errors.New("not implemented")
-	case strings.HasPrefix(id, "seriesBizId"):
-		return nil, errors.New("not implemented")
-	case strings.HasPrefix(id, "favId"):
-		return nil, errors.New("not implemented")
+	case strings.HasPrefix(id, "mid:"):
+		return NewSpaceVideoFetcher(f.client, f.cfg, f.logger), nil
+	case strings.HasPrefix(id, "listBizId:"):
+		return NewMediaListFetcher(f.client, f.cfg, f.logger), nil
+	case strings.HasPrefix(id, "seriesBizId:"):
+		return NewSeriesListFetcher(f.client, f.cfg, f.logger), nil
+	case strings.HasPrefix(id, "favId:"):
+		return NewFavListFetcher(f.client, f.cfg, f.logger), nil
 	case isNumeric(id):
 		return NewNormalFetcher(f.client, f.cfg, f.logger), nil
 	default:
