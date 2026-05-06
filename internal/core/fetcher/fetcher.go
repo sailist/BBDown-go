@@ -40,7 +40,7 @@ func (f *Factory) Create(id string, useIntl bool) (Fetcher, error) {
 		return NewCheeseFetcher(f.client, f.cfg, f.logger), nil
 	case strings.HasPrefix(id, "ep:"):
 		if useIntl {
-			return nil, errors.New("not implemented")
+			return NewIntlBangumiFetcher(f.client, f.cfg, f.logger), nil
 		}
 		return NewBangumiFetcher(f.client, f.cfg, f.logger), nil
 	case strings.HasPrefix(id, "mid"):

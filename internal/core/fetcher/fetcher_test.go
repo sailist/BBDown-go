@@ -119,11 +119,18 @@ func TestFactory_ReturnsBangumiFetcherForEpPrefix(t *testing.T) {
 	}
 }
 
-func TestFactory_ReturnsErrorForEpWithIntl(t *testing.T) {
+func TestFactory_ReturnsIntlBangumiFetcherForEpWithIntl(t *testing.T) {
 	factory := newTestFactory()
 	f, err := factory.Create("ep:123", true)
-	if err == nil {
-		t.Errorf("Create(%q, true) expected error, got fetcher %v", "ep:123", f)
+	if err != nil {
+		t.Fatalf("Create(%q, true) expected no error, got %v", "ep:123", err)
+	}
+	if f == nil {
+		t.Fatal("expected non-nil fetcher")
+	}
+	_, ok := f.(*IntlBangumiFetcher)
+	if !ok {
+		t.Errorf("expected *IntlBangumiFetcher, got %T", f)
 	}
 }
 
