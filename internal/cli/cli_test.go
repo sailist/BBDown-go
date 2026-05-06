@@ -258,7 +258,7 @@ func TestNewLoginTVCommand(t *testing.T) {
 }
 
 func TestNewServeCommand(t *testing.T) {
-	cmd := NewServeCommand()
+	cmd := NewServeCommand(NewOption())
 	if cmd.Use != "serve" {
 		t.Errorf("expected Use = serve, got %s", cmd.Use)
 	}
@@ -306,14 +306,14 @@ func TestRunLoginTVNotImplemented(t *testing.T) {
 	}
 }
 
-func TestRunServeNotImplemented(t *testing.T) {
-	opt := &ServeOption{Listen: "http://127.0.0.1:8080"}
-	err := RunServe(context.Background(), opt)
+func TestRunServeInvalidAddress(t *testing.T) {
+	opt := NewOption()
+	err := RunServe(context.Background(), opt, "not-a-valid-url")
 	if err == nil {
-		t.Error("expected error from unimplemented serve handler")
+		t.Error("expected error for invalid listen address")
 	}
-	if !strings.Contains(err.Error(), "not implemented") {
-		t.Errorf("expected error to contain 'not implemented', got %v", err)
+	if !strings.Contains(err.Error(), "not a valid http URL") {
+		t.Errorf("expected error to contain 'not a valid http URL', got %v", err)
 	}
 }
 
@@ -331,7 +331,7 @@ func TestSubcommandRegistration(t *testing.T) {
 	root := NewRootCommand(opt)
 	root.AddCommand(NewLoginCommand())
 	root.AddCommand(NewLoginTVCommand())
-	root.AddCommand(NewServeCommand())
+	root.AddCommand(NewServeCommand(opt))
 
 	found := map[string]bool{}
 	for _, c := range root.Commands() {
