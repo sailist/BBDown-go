@@ -186,6 +186,7 @@ func TestNewRootCommandFlags(t *testing.T) {
 			opt := NewOption()
 			cmd := NewRootCommand(opt)
 			cmd.SetArgs(c.args)
+			// Prevent cobra from printing usage or exiting.
 			cmd.SetOut(&cobraNoOpWriter{})
 			cmd.SetErr(&cobraNoOpWriter{})
 			_ = cmd.Execute()
@@ -203,6 +204,7 @@ func TestNewRootCommandPositionalArg(t *testing.T) {
 	cmd.SetOut(&cobraNoOpWriter{})
 	cmd.SetErr(&cobraNoOpWriter{})
 
+	// RunE returns an error because handler is not wired, but URL should be parsed.
 	_ = cmd.Execute()
 	if opt.URL != "https://www.bilibili.com/video/BV1xx411c7mD" {
 		t.Errorf("expected URL to be parsed, got %s", opt.URL)
@@ -235,11 +237,80 @@ func TestNewRootCommandHiddenFlags(t *testing.T) {
 	}
 }
 
+func TestNewLoginCommand(t *testing.T) {
+	cmd := NewLoginCommand()
+	if cmd.Use != "login" {
+		t.Errorf("expected Use = login, got %s", cmd.Use)
+	}
+	if cmd.Short != "login via WEB QR code" {
+		t.Errorf("unexpected short description: %s", cmd.Short)
+	}
+}
+
+func TestNewLoginTVCommand(t *testing.T) {
+	cmd := NewLoginTVCommand()
+	if cmd.Use != "logintv" {
+		t.Errorf("expected Use = logintv, got %s", cmd.Use)
+	}
+	if cmd.Short != "login via TV QR code" {
+		t.Errorf("unexpected short description: %s", cmd.Short)
+	}
+}
+
+func TestNewServeCommand(t *testing.T) {
+	cmd := NewServeCommand()
+	if cmd.Use != "serve" {
+		t.Errorf("expected Use = serve, got %s", cmd.Use)
+	}
+	if cmd.Short != "start BBDown API server" {
+		t.Errorf("unexpected short description: %s", cmd.Short)
+	}
+
+	listen, err := cmd.Flags().GetString("listen")
+	if err != nil {
+		t.Fatalf("failed to get listen flag: %v", err)
+	}
+	if listen != "http://0.0.0.0:23333" {
+		t.Errorf("expected listen default = http://0.0.0.0:23333, got %s", listen)
+	}
+}
+
 func TestRunRootNotImplemented(t *testing.T) {
 	opt := NewOption()
 	err := RunRoot(context.Background(), opt)
 	if err == nil {
 		t.Error("expected error from unimplemented root handler")
+	}
+	if !strings.Contains(err.Error(), "not implemented") {
+		t.Errorf("expected error to contain 'not implemented', got %v", err)
+	}
+}
+
+func TestRunLoginNotImplemented(t *testing.T) {
+	err := RunLogin(context.Background())
+	if err == nil {
+		t.Error("expected error from unimplemented login handler")
+	}
+	if !strings.Contains(err.Error(), "not implemented") {
+		t.Errorf("expected error to contain 'not implemented', got %v", err)
+	}
+}
+
+func TestRunLoginTVNotImplemented(t *testing.T) {
+	err := RunLoginTV(context.Background())
+	if err == nil {
+		t.Error("expected error from unimplemented logintv handler")
+	}
+	if !strings.Contains(err.Error(), "not implemented") {
+		t.Errorf("expected error to contain 'not implemented', got %v", err)
+	}
+}
+
+func TestRunServeNotImplemented(t *testing.T) {
+	opt := &ServeOption{Listen: "http://127.0.0.1:8080"}
+	err := RunServe(context.Background(), opt)
+	if err == nil {
+		t.Error("expected error from unimplemented serve handler")
 	}
 	if !strings.Contains(err.Error(), "not implemented") {
 		t.Errorf("expected error to contain 'not implemented', got %v", err)
@@ -252,6 +323,29 @@ func TestDefaultSavePathConstants(t *testing.T) {
 	}
 	if MultiPageDefaultSavePath != "<videoTitle>/[P<pageNumberWithZero>]<pageTitle>" {
 		t.Errorf("unexpected MultiPageDefaultSavePath: %s", MultiPageDefaultSavePath)
+	}
+}
+
+func TestSubcommandRegistration(t *testing.T) {
+	opt := NewOption()
+	root := NewRootCommand(opt)
+	root.AddCommand(NewLoginCommand())
+	root.AddCommand(NewLoginTVCommand())
+	root.AddCommand(NewServeCommand())
+
+	found := map[string]bool{}
+	for _, c := range root.Commands() {
+		found[c.Use] = true
+	}
+
+	if !found["login"] {
+		t.Error("expected login subcommand to be registered")
+	}
+	if !found["logintv"] {
+		t.Error("expected logintv subcommand to be registered")
+	}
+	if !found["serve"] {
+		t.Error("expected serve subcommand to be registered")
 	}
 }
 
