@@ -103,3 +103,41 @@ func TestFactory_ReturnsNormalFetcherForNumericID(t *testing.T) {
 		}
 	}
 }
+
+func TestFactory_ReturnsBangumiFetcherForEpPrefix(t *testing.T) {
+	factory := newTestFactory()
+	f, err := factory.Create("ep:123", false)
+	if err != nil {
+		t.Fatalf("Create(%q, false) expected no error, got %v", "ep:123", err)
+	}
+	if f == nil {
+		t.Fatal("expected non-nil fetcher")
+	}
+	_, ok := f.(*BangumiFetcher)
+	if !ok {
+		t.Errorf("expected *BangumiFetcher, got %T", f)
+	}
+}
+
+func TestFactory_ReturnsErrorForEpWithIntl(t *testing.T) {
+	factory := newTestFactory()
+	f, err := factory.Create("ep:123", true)
+	if err == nil {
+		t.Errorf("Create(%q, true) expected error, got fetcher %v", "ep:123", f)
+	}
+}
+
+func TestFactory_ReturnsCheeseFetcherForCheesePrefix(t *testing.T) {
+	factory := newTestFactory()
+	f, err := factory.Create("cheese:123", false)
+	if err != nil {
+		t.Fatalf("Create(%q, false) expected no error, got %v", "cheese:123", err)
+	}
+	if f == nil {
+		t.Fatal("expected non-nil fetcher")
+	}
+	_, ok := f.(*CheeseFetcher)
+	if !ok {
+		t.Errorf("expected *CheeseFetcher, got %T", f)
+	}
+}
