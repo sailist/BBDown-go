@@ -351,7 +351,7 @@ bbdown-go/
   - 测试工厂对非法 id 返回错误
 - **对应 C#**: `BBDown.Core/IFetcher.cs`, `FetcherFactory.cs`
 
-#### 提交 10: `feat(internal/core/fetcher): implement NormalInfoFetcher`
+#### 提交 10: `feat(internal/core/fetcher): implement NormalInfoFetcher` ✅
 - 实现 `internal/core/fetcher/normal.go`
   - 调用 `x/web-interface/view?aid={id}`
   - 解析分 P 信息
@@ -363,21 +363,21 @@ bbdown-go/
   - 测试正常视频、多 P 视频、互动视频
 - **对应 C#**: `NormalInfoFetcher.cs`
 
-#### 提交 11: `feat(internal/core/fetcher): implement Bangumi and Cheese fetchers`
+#### 提交 11: `feat(internal/core/fetcher): implement Bangumi and Cheese fetchers` ✅
 - `bangumi.go`：调用 `pgc/view/web/season?ep_id=`
 - `cheese.go`：调用 `pugv/view/web/season?ep_id=`
 - 更新 Factory 支持 `ep:`, `cheese:` 前缀
 - 每个 fetcher 带 `_test.go`，mock 番剧/课程 JSON
 - **对应 C#**: `BangumiInfoFetcher.cs`, `CheeseInfoFetcher.cs`
 
-#### 提交 12: `feat(internal/core/fetcher): implement IntlBangumiInfoFetcher`
+#### 提交 12: `feat(internal/core/fetcher): implement IntlBangumiInfoFetcher` ✅
 - `intl_bangumi.go`：调用 `api.bilibili.tv/intl/gateway/v2/ogv/view/app/season`
 - 处理 BiliPlus host 和 sign
 - Factory 更新
 - mock 测试
 - **对应 C#**: `IntlBangumiInfoFetcher.cs`
 
-#### 提交 13: `feat(internal/core/fetcher): implement collection and space fetchers`
+#### 提交 13: `feat(internal/core/fetcher): implement collection and space fetchers` ✅
 - `media_list.go`（合集）
 - `series_list.go`（系列）
 - `fav_list.go`（收藏夹）
@@ -386,7 +386,7 @@ bbdown-go/
 - 集成测试（mock 分页 API）
 - **对应 C#**: `MediaListFetcher.cs`, `SeriesListFetcher.cs`, `FavListFetcher.cs`, `SpaceVideoFetcher.cs`
 
-#### 提交 14: `feat(internal/core/parser): add playurl API builder with tests`
+#### 提交 14: `feat(internal/core/parser): add playurl API builder with tests` ✅
 - 实现 `internal/core/parser/api.go`：
   - `BuildWebPlayurlAPI(aid, cid, epid, qn string) string`
   - `BuildTVPlayurlAPI(...)`（含 sign 计算）
@@ -398,7 +398,7 @@ bbdown-go/
   - 验证 WBI sign / TV sign 格式
 - **对应 C#**: `Parser.cs` 中 API 构建部分
 
-#### 提交 15: `feat(internal/core/parser): add DASH stream parser`
+#### 提交 15: `feat(internal/core/parser): add DASH stream parser` ✅
 - 实现 `internal/core/parser/dash.go`：
   - `ParseDashTracks(jsonStr string) ([]entity.Video, []entity.Audio, error)`
   - 解析 video/audio/dolby/flac tracks
@@ -410,7 +410,7 @@ bbdown-go/
   - 测试杜比、Hi-Res、多编码共存场景
 - **对应 C#**: `Parser.cs` 中 DASH 部分
 
-#### 提交 16: `feat(internal/core/parser): add FLV stream parser`
+#### 提交 16: `feat(internal/core/parser): add FLV stream parser` ✅
 - 实现 `internal/core/parser/flv.go`：
   - `ParseFlvTracks(jsonStr string) (*ParsedResult, error)`
   - 解析 `durl` clips
