@@ -3,10 +3,23 @@ package util
 import (
 	"crypto/md5"
 	"fmt"
+	"math/rand"
 	"strconv"
 	"strings"
 	"time"
 )
+
+var rnd = rand.New(rand.NewSource(time.Now().UnixNano()))
+
+// GetRandomString generates a random alphanumeric string of the given length.
+func GetRandomString(length int) string {
+	const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_0123456789"
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = chars[rnd.Intn(len(chars))]
+	}
+	return string(b)
+}
 
 // WbiSign generates a WBI signature by appending an MD5 hash of api+wbi.
 func WbiSign(api, wbi string) string {

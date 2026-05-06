@@ -2,6 +2,7 @@ package util
 
 import (
 	"strconv"
+	"strings"
 	"testing"
 )
 
@@ -130,6 +131,26 @@ func TestGetValidFileName(t *testing.T) {
 		if got != tt.want {
 			t.Errorf("GetValidFileName(%q, %q, %v) = %q, want %q", tt.input, tt.replacement, tt.filterSlash, got, tt.want)
 		}
+	}
+}
+
+func TestGetRandomString(t *testing.T) {
+	s := GetRandomString(20)
+	if len(s) != 20 {
+		t.Errorf("GetRandomString(20) length = %d, want 20", len(s))
+	}
+
+	const allowed = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_0123456789"
+	for _, c := range s {
+		if !strings.ContainsRune(allowed, c) {
+			t.Errorf("GetRandomString() contains invalid char: %q", c)
+		}
+	}
+
+	// Should generate different strings
+	s2 := GetRandomString(20)
+	if s == s2 {
+		t.Error("GetRandomString() generated identical strings")
 	}
 }
 
