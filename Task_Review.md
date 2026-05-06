@@ -447,7 +447,7 @@ bbdown-go/
 - **关键技术决策**：选 `protoc-gen-go`，从现有 `.proto` 直接生成。添加 `//go:generate` 指令。
 - **对应 C#**: `AppHelper.cs`
 
-#### 提交 20: `feat(internal/core/util): add subtitle utilities`
+#### 提交 20: `feat(internal/core/util): add subtitle utilities` ✅
 - 实现 `internal/core/util/subtitle.go`：
   - `GetSubtitles(ctx, aid, cid, epid string, isIntl bool) ([]entity.Subtitle, error)`
   - `ConvertSubFromJSON(jsonStr string) (string, error)`（JSON → SRT）
@@ -463,7 +463,7 @@ bbdown-go/
 
 本阶段所有模块都是**接口驱动**，便于后续 mock 和服务器模式复用。
 
-#### 提交 21: `feat(internal/download): define Downloader interface and Config`
+#### 提交 21: `feat(internal/download): define Downloader interface and Config` ✅
 - 定义 `internal/download/downloader.go`：
   ```go
   type Downloader interface {
@@ -478,7 +478,7 @@ bbdown-go/
 - 添加 `internal/download/downloader_test.go`（接口契约测试）
 - **对应 C#**: `BBDownDownloadUtil.cs` 接口抽象
 
-#### 提交 22: `feat(internal/download): implement single-threaded downloader`
+#### 提交 22: `feat(internal/download): implement single-threaded downloader` ✅
 - 实现 `internal/download/single.go`：
   - HTTP Range 请求支持
   - 断点续传（检查已下载大小 + Range header）
@@ -491,7 +491,7 @@ bbdown-go/
   - 测试非 Range 支持的服务器 fallback
 - **对应 C#**: `BBDownDownloadUtil.cs` 单线程部分
 
-#### 提交 23: `feat(internal/download): implement multi-threaded range download`
+#### 提交 23: `feat(internal/download): implement multi-threaded range download` ✅
 - 实现 `internal/download/multithread.go`：
   - 20MB 分片，使用 `errgroup.Group` 并行下载
   - 临时文件命名：`{index}_{filename}.tmp`
@@ -503,7 +503,7 @@ bbdown-go/
   - 测试某一片段失败时的整体取消（errgroup 行为）
 - **对应 C#**: `BBDownDownloadUtil.cs` 多线程部分
 
-#### 提交 24: `feat(internal/download): add aria2c integration`
+#### 提交 24: `feat(internal/download): add aria2c integration` ✅
 - 实现 `internal/download/aria2c.go`：
   - `DownloadWithAria2c(url, path, args string) error`
   - 查找 aria2c 可执行文件（当前目录 → 程序目录 → `$PATH`）
@@ -512,7 +512,7 @@ bbdown-go/
   - mock `exec.LookPath`（通过接口抽象）
 - **对应 C#**: `BBDownAria2c.cs`
 
-#### 提交 25: `feat(internal/download): add progress bar reporter`
+#### 提交 25: `feat(internal/download): add progress bar reporter` ✅
 - 实现 `internal/download/progress.go`：
   - 封装 `schollz/progressbar/v3`
   - `type Reporter interface { Report(current, total int64) }`
@@ -522,7 +522,7 @@ bbdown-go/
 - 添加 `internal/download/progress_test.go`
 - **对应 C#**: `ProgressBar.cs`
 
-#### 提交 26: `feat(internal/muxer): define Muxer interface`
+#### 提交 26: `feat(internal/muxer): define Muxer interface` ✅
 - 定义 `internal/muxer/muxer.go`：
   ```go
   type Muxer interface {
@@ -533,7 +533,7 @@ bbdown-go/
   ```
 - **对应 C#**: `BBDownMuxer.cs` 抽象
 
-#### 提交 27: `feat(internal/muxer): implement ffmpeg muxer`
+#### 提交 27: `feat(internal/muxer): implement ffmpeg muxer` ✅
 - 实现 `internal/muxer/ffmpeg.go`：
   - 构造 ffmpeg 参数（-i 输入、-map 映射、-metadata 元数据）
   - 章节元数据文件生成（FFMETADATA 格式）
@@ -546,12 +546,12 @@ bbdown-go/
   - 测试 FFMETADATA 格式正确性
 - **对应 C#**: `BBDownMuxer.cs` ffmpeg 路径
 
-#### 提交 28: `feat(internal/muxer): implement mp4box muxer`
+#### 提交 28: `feat(internal/muxer): implement mp4box muxer` ✅
 - 实现 `internal/muxer/mp4box.go`
 - 添加参数构造测试
 - **对应 C#**: `BBDownMuxer.cs` mp4box 路径
 
-#### 提交 29: `feat(internal/muxer): add external binary finder`
+#### 提交 29: `feat(internal/muxer): add external binary finder` ✅
 - 实现 `internal/muxer/finder.go`：
   - `FindExecutable(name string) (string, error)`
   - 搜索路径：当前目录 → 程序目录 → `$PATH`
@@ -563,20 +563,20 @@ bbdown-go/
 
 ### Phase 3: CLI 与配置（提交 30-36）
 
-#### 提交 30: `feat(internal/cli): add cobra root command and flags`
+#### 提交 30: `feat(internal/cli): add cobra root command and flags` ✅
 - 使用 `spf13/cobra` 实现 root command
 - 定义所有 flags（复刻 `MyOption`）
 - 添加 `internal/cli/cli_test.go`
   - 测试 flag 解析正确性
 - **对应 C#**: `CommandLineInvoker.cs`, `MyOption.cs`
 
-#### 提交 31: `feat(internal/cli): add login and serve subcommands`
+#### 提交 31: `feat(internal/cli): add login and serve subcommands` ✅
 - `login` subcommand
 - `logintv` subcommand
 - `serve` subcommand（带 `--listen` flag）
 - 添加子命令解析测试
 
-#### 提交 32: `feat(internal/config): add config file parser`
+#### 提交 32: `feat(internal/config): add config file parser` ✅
 - 实现 `internal/config/parser.go`：
   - 读取 `BBDown.config`
   - `#` 注释支持
@@ -585,7 +585,7 @@ bbdown-go/
 - 添加 `internal/config/parser_test.go`
 - **对应 C#**: `BBDownConfigParser.cs`
 
-#### 提交 33: `feat(internal/app): add URL parser`
+#### 提交 33: `feat(internal/app): add URL parser` ✅
 - 实现 `internal/app/url_parser.go`：
   - `ParseInput(input string) (string, error)`
   - 支持：BV / AV / EP / SS / MD / cheese / mid / favId / listBizId / seriesBizId / 完整 URL
@@ -594,7 +594,7 @@ bbdown-go/
   - 每种 URL 格式至少一个测试用例
 - **对应 C#**: `BBDownUtil.GetAvIdAsync`
 
-#### 提交 34: `feat(internal/app): add save path formatter and track sorter`
+#### 提交 34: `feat(internal/app): add save path formatter and track sorter` ✅
 - `formatter.go`：`FormatSavePath(format, title, video, audio, page, ...)`
 - `sorter.go`：
   - `SortVideoTracks(tracks, dfnPriority, encodingPriority, ascending)`
@@ -675,7 +675,7 @@ bbdown-go/
   - 全局 panic recover + `slog.Error`
 - **对应 C#**: `Program.Main`, `Program.RunApp`, `Program.DoWorkAsync`
 
-#### 提交 42: `feat(internal/app): add update checker`
+#### 提交 42: `feat(internal/app): add update checker` ✅ ✅
 - 实现 `internal/app/update.go`：
   - `CheckUpdate(ctx context.Context, client httpclient.Client) (string, error)`
   - 异步检查 GitHub releases latest redirect
@@ -704,7 +704,7 @@ bbdown-go/
 - 添加测试
 - **对应 C#**: `BBDownLoginUtil.cs`（TV 部分）
 
-#### 提交 45: `feat(internal/danmaku): add danmaku XML parser and ASS converter`
+#### 提交 45: `feat(internal/danmaku): add danmaku XML parser and ASS converter` ✅ ✅
 - `internal/danmaku/parse.go`：`ParseXML(xmlPath string) ([]DanmakuItem, error)`
 - `internal/danmaku/ass.go`：`SaveAsAss(items []DanmakuItem, outputPath string) error`
 - `internal/danmaku/position.go`：`PositionController`（碰撞检测）
@@ -734,7 +734,7 @@ bbdown-go/
 - `serve` subcommand 真正启动服务器
 - 服务器模式下复用 `internal/app` 的 workflow（通过接口调用）
 
-#### 提交 49: `feat(internal/login): add console QR code renderer`
+#### 提交 49: `feat(internal/login): add console QR code renderer` ✅ ✅
 - `internal/login/qrcode.go`：控制台字符二维码渲染
 - 添加 `internal/login/qrcode_test.go`
 - **对应 C#**: `ConsoleQRCode.cs`
