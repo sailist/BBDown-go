@@ -602,7 +602,7 @@ bbdown-go/
 - 添加单元测试
 - **对应 C#**: `Program.FormatSavePath`, `Program.SortTracks`
 
-#### 提交 35: `feat(internal/app): add setup and validation logic`
+#### 提交 35: `feat(internal/app): add setup and validation logic` ✅
 - 实现 `internal/app/setup.go`：
   - `SetupWork(opt *cli.Option, logger *slog.Logger) (*WorkConfig, error)`
   - 废弃选项处理、冲突选项处理
@@ -686,7 +686,7 @@ bbdown-go/
 
 ### Phase 5: 高级功能（提交 43-50）
 
-#### 提交 43: `feat(internal/login): add WEB QR code login`
+#### 提交 43: `feat(internal/login): add WEB QR code login` ✅
 - 实现 `internal/login/web.go`
   - 获取登录 URL
   - 生成二维码（控制台字符画 + 图片文件）
@@ -696,7 +696,7 @@ bbdown-go/
 - 添加 `internal/login/web_test.go`（mock 轮询 API）
 - **对应 C#**: `BBDownLoginUtil.cs`（WEB 部分）
 
-#### 提交 44: `feat(internal/login): add TV QR code login`
+#### 提交 44: `feat(internal/login): add TV QR code login` ✅
 - 实现 `internal/login/tv.go`
   - TV 端扫码登录流程
   - AccessToken 获取
