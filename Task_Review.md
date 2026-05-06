@@ -628,7 +628,7 @@ bbdown-go/
 
 ### Phase 4: 主工作流编排（提交 37-42）
 
-#### 提交 37: `feat(internal/app): add DownloadPage orchestrator - part 1 (info & subtitle)`
+#### 提交 37: `feat(internal/app): add DownloadPage orchestrator - part 1 (info & subtitle)` ✅
 - 实现 `internal/app/download_page.go` 的**前半部分**：
   - 获取章节信息（`FetchPoints`）
   - 下载封面
@@ -739,7 +739,7 @@ bbdown-go/
 - 添加 `internal/login/qrcode_test.go`
 - **对应 C#**: `ConsoleQRCode.cs`
 
-#### 提交 50: `refactor: unify error wrapping and add domain error types`
+#### 提交 50: `refactor: unify error wrapping and add domain error types` ✅
 - 在 `internal/core/entity/errors.go` 中定义：
   ```go
   var (
