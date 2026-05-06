@@ -1,7 +1,7 @@
 package logger
 
 import (
-	slog "golang.org/x/exp/slog"
+	"log/slog"
 	"os"
 )
 

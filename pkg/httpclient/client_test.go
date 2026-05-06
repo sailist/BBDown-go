@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"golang.org/x/exp/slog"
+	"log/slog"
 )
 
 func TestRetrySuccessAfterFailures(t *testing.T) {

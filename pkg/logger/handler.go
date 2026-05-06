@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	slog "golang.org/x/exp/slog"
+	"log/slog"
 	"strings"
 	"sync"
 	"time"

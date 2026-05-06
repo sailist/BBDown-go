@@ -12,7 +12,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"golang.org/x/exp/slog"
+	"log/slog"
 )
 
 var seedCounter int64
