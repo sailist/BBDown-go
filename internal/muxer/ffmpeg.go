@@ -39,7 +39,7 @@ func (m *FFmpegMuxer) Mux(ctx context.Context, cfg MuxConfig) error {
 
 	args, err := m.buildFFmpegArgs(cfg)
 	if err != nil {
-		return err
+		return fmt.Errorf("build ffmpeg args: %w", err)
 	}
 
 	dir := filepath.Dir(cfg.OutPath)
@@ -71,7 +71,10 @@ func mergeFLVWithFFmpeg(ctx context.Context, files []string, outPath string) err
 	}
 
 	if len(files) == 1 {
-		return os.Rename(files[0], outPath)
+		if err := os.Rename(files[0], outPath); err != nil {
+			return fmt.Errorf("rename single file: %w", err)
+		}
+		return nil
 	}
 
 	ffmpegPath, err := FindExecutable("ffmpeg")
@@ -111,19 +114,19 @@ func mergeFLVWithFFmpeg(ctx context.Context, files []string, outPath string) err
 func combineFiles(files []string, outPath string) error {
 	out, err := os.Create(outPath)
 	if err != nil {
-		return err
+		return fmt.Errorf("create output file: %w", err)
 	}
 	defer out.Close()
 
 	for _, f := range files {
 		in, err := os.Open(f)
 		if err != nil {
-			return err
+			return fmt.Errorf("open input file: %w", err)
 		}
 		_, err = io.Copy(out, in)
 		in.Close()
 		if err != nil {
-			return err
+			return fmt.Errorf("copy file: %w", err)
 		}
 	}
 	return nil

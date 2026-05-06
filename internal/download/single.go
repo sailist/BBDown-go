@@ -62,7 +62,10 @@ func (d *SingleDownloader) downloadWithProgress(ctx context.Context, url, path s
 		return fmt.Errorf("download failed after 3 attempts: %w", lastErr)
 	}
 
-	return os.Rename(tmpPath, path)
+	if err := os.Rename(tmpPath, path); err != nil {
+		return fmt.Errorf("rename downloaded file: %w", err)
+	}
+	return nil
 }
 
 func (d *SingleDownloader) attemptDownload(ctx context.Context, url, tmpPath string, totalSize int64, progress func(downloaded, total int64)) error {

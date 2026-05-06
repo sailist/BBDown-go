@@ -34,7 +34,7 @@ func ExtractTracks(ctx context.Context, client httpclient.Client, cfg *config.Co
 
 	webJson, err := getPlayJson(ctx, client, cfg, logger, aidOri, aid, cid, epid, opts)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("get play json: %w", err)
 	}
 
 	if cfg.DebugLog {
@@ -187,7 +187,7 @@ func readBody(resp *http.Response) (string, error) {
 	defer resp.Body.Close()
 	b, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("read response body: %w", err)
 	}
 	return string(b), nil
 }
@@ -208,7 +208,7 @@ func getMaxQn() string {
 func parseIntlTracks(jsonStr string) (*entity.ParsedResult, error) {
 	var root map[string]json.RawMessage
 	if err := json.Unmarshal([]byte(jsonStr), &root); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("parse intl tracks root: %w", err)
 	}
 
 	var dataObj map[string]json.RawMessage
@@ -316,7 +316,7 @@ func parseIntlTracks(jsonStr string) (*entity.ParsedResult, error) {
 func extractRootJSON(jsonStr string) (string, error) {
 	var root map[string]json.RawMessage
 	if err := json.Unmarshal([]byte(jsonStr), &root); err != nil {
-		return "", err
+		return "", fmt.Errorf("extract root json: %w", err)
 	}
 
 	hasResult := strings.Contains(jsonStr, `"result":{`)

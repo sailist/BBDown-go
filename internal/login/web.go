@@ -14,6 +14,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/nilaonai/bbdown-go/internal/core/entity"
 	"github.com/nilaonai/bbdown-go/pkg/httpclient"
 	"github.com/skip2/go-qrcode"
 )
@@ -25,10 +26,7 @@ const (
 	cookieFile    = "BBDown.data"
 )
 
-var (
-	// ErrQRExpired is returned when the QR code has expired.
-	ErrQRExpired = errors.New("QR code expired")
-)
+
 
 // qrGenerateResponse represents the response from the QR code generation API.
 type qrGenerateResponse struct {
@@ -79,7 +77,7 @@ func (l *WebLogin) Login(ctx context.Context) error {
 
 	cookie, err := l.pollLoginStatus(ctx, qrcodeKey)
 	if err != nil {
-		return err
+		return fmt.Errorf("poll login status: %w", err)
 	}
 
 	if err := l.saveCookie(cookie); err != nil {
@@ -121,7 +119,7 @@ func (l *WebLogin) generateQRCode(ctx context.Context) (string, string, error) {
 func (l *WebLogin) renderQRCode(loginURL string) error {
 	qr, err := NewConsoleQRCode(loginURL)
 	if err != nil {
-		return err
+		return fmt.Errorf("render qr code: %w", err)
 	}
 	qr.Render()
 	return nil
@@ -155,8 +153,8 @@ func (l *WebLogin) pollLoginStatus(ctx context.Context, qrcodeKey string) (strin
 
 		cookie, done, err := l.checkLoginStatus(ctx, qrcodeKey, &scanned)
 		if err != nil {
-			if errors.Is(err, ErrQRExpired) {
-				return "", err
+			if errors.Is(err, entity.ErrQRExpired) {
+				return "", fmt.Errorf("poll login status: %w", err)
 			}
 			l.logger.Warn("poll login status failed", "err", err)
 			continue
@@ -192,7 +190,7 @@ func (l *WebLogin) checkLoginStatus(ctx context.Context, qrcodeKey string, scann
 	switch result.Data.Code {
 	case 86038:
 		l.logger.Info("QR code expired")
-		return "", false, ErrQRExpired
+		return "", false, entity.ErrQRExpired
 	case 86101:
 		l.logger.Debug("waiting for scan")
 		return "", false, nil

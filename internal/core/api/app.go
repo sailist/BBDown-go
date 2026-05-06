@@ -19,10 +19,10 @@ func PackMessage(input []byte) ([]byte, error) {
 	var buf bytes.Buffer
 	zw := gzip.NewWriter(&buf)
 	if _, err := zw.Write(input); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("gzip write: %w", err)
 	}
 	if err := zw.Close(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("gzip close: %w", err)
 	}
 	comp := buf.Bytes()
 
@@ -48,10 +48,14 @@ func ReadMessage(data []byte) ([]byte, error) {
 	if flag == 1 {
 		zr, err := gzip.NewReader(bytes.NewReader(payload))
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("gzip new reader: %w", err)
 		}
 		defer zr.Close()
-		return io.ReadAll(zr)
+		b, err := io.ReadAll(zr)
+		if err != nil {
+			return nil, fmt.Errorf("gzip read: %w", err)
+		}
+		return b, nil
 	}
 	return payload, nil
 }
@@ -298,7 +302,7 @@ func ConvertToDashJson(resp *Response.PlayViewReply) (string, error) {
 
 	b, err := json.Marshal(result)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("marshal dash json: %w", err)
 	}
 	return string(b), nil
 }

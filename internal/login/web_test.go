@@ -13,6 +13,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/nilaonai/bbdown-go/internal/core/entity"
 	"github.com/nilaonai/bbdown-go/pkg/httpclient"
 )
 
@@ -249,7 +250,7 @@ func TestWebLogin_pollLoginStatus_Expired(t *testing.T) {
 	defer cancel()
 
 	err := wl.Login(ctx)
-	if !errors.Is(err, ErrQRExpired) {
+	if !errors.Is(err, entity.ErrQRExpired) {
 		t.Fatalf("expected ErrQRExpired, got: %v", err)
 	}
 }

@@ -132,7 +132,10 @@ func (d *MultiThreadDownloader) DownloadMultiThread(ctx context.Context, url, pa
 		os.Remove(tmpPath)
 	}
 
-	return os.Rename(path+".tmp", path)
+	if err := os.Rename(path+".tmp", path); err != nil {
+		return fmt.Errorf("rename merged file: %w", err)
+	}
+	return nil
 }
 
 func (d *MultiThreadDownloader) downloadChunk(ctx context.Context, url, path string, start, end int64) error {

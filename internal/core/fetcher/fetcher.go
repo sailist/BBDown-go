@@ -12,9 +12,6 @@ import (
 	"github.com/nilaonai/bbdown-go/pkg/httpclient"
 )
 
-// ErrKeyNotFound is returned when a requested key/episode is not found in the remote data.
-var ErrKeyNotFound = errors.New("key not found")
-
 // Fetcher fetches video metadata for a given ID.
 type Fetcher interface {
 	Fetch(ctx context.Context, id string) (*entity.VInfo, error)

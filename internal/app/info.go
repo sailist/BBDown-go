@@ -66,7 +66,7 @@ func GetVideoInfo(ctx context.Context, opt *cli.Option, input string, deps Deps)
 
 	vInfo, err = f.Fetch(ctx, aidOri)
 	if err != nil {
-		if errors.Is(err, fetcher.ErrKeyNotFound) && !strings.HasPrefix(aidOri, "cheese:") {
+		if errors.Is(err, entity.ErrKeyNotFound) && !strings.HasPrefix(aidOri, "cheese:") {
 			deps.Logger.Warn("未找到此 EP/SS 对应番剧信息, 正在尝试按课程查找。")
 			aidOri = strings.Replace(aidOri, "ep:", "cheese:", 1)
 			deps.Logger.Info("新的 aid", "aid", aidOri)
@@ -79,10 +79,10 @@ func GetVideoInfo(ctx context.Context, opt *cli.Option, input string, deps Deps)
 			}
 			vInfo, err = f.Fetch(ctx, aidOri)
 			if err != nil {
-				return "", nil, "", err
+				return "", nil, "", fmt.Errorf("fetch video info: %w", err)
 			}
 		} else {
-			return "", nil, "", err
+			return "", nil, "", fmt.Errorf("fetch video info: %w", err)
 		}
 	}
 

@@ -79,7 +79,7 @@ func TestGetVideoInfo_EpNotFoundFallbackToCheese(t *testing.T) {
 		FetcherFactory: func(id string, useIntl bool) (fetcher.Fetcher, error) {
 			callCount++
 			if id == "ep:123" {
-				return &mockFetcher{err: fetcher.ErrKeyNotFound}, nil
+				return &mockFetcher{err: entity.ErrKeyNotFound}, nil
 			}
 			if id == "cheese:123" {
 				return &mockFetcher{vInfo: &entity.VInfo{

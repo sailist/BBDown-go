@@ -2,6 +2,7 @@ package parser
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/nilaonai/bbdown-go/internal/config"
 	"github.com/nilaonai/bbdown-go/internal/core/entity"
@@ -12,7 +13,7 @@ import (
 func ParseFlvTracks(jsonStr string) (*entity.ParsedResult, error) {
 	var root map[string]json.RawMessage
 	if err := json.Unmarshal([]byte(jsonStr), &root); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("parse flv root: %w", err)
 	}
 
 	result := &entity.ParsedResult{}

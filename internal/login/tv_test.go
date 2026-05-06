@@ -12,6 +12,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/nilaonai/bbdown-go/internal/core/entity"
 	"github.com/nilaonai/bbdown-go/pkg/httpclient"
 )
 
@@ -146,7 +147,7 @@ func TestTVLogin_checkLoginStatus(t *testing.T) {
 			response:  `{"code":86038,"data":{}}`,
 			wantToken: "",
 			wantDone:  false,
-			wantErr:   ErrTVQRExpired,
+			wantErr:   entity.ErrQRExpired,
 		},
 		{
 			name:      "success",
@@ -228,7 +229,7 @@ func TestTVLogin_pollLoginStatus_Expired(t *testing.T) {
 	defer cancel()
 
 	_, err := tv.pollLoginStatus(ctx, "auth123")
-	if !errors.Is(err, ErrTVQRExpired) {
+	if !errors.Is(err, entity.ErrQRExpired) {
 		t.Errorf("err = %v, want ErrTVQRExpired", err)
 	}
 }

@@ -2,6 +2,7 @@ package parser
 
 import (
 	"encoding/json"
+	"fmt"
 	"sort"
 	"strings"
 
@@ -30,7 +31,7 @@ func ParseClipInfoList(jsonStr string) ([]entity.ViewPoint, error) {
 		ClipInfoList []clipInfoItem `json:"clip_info_list"`
 	}
 	if err := json.Unmarshal([]byte(jsonStr), &root); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("parse clip info: %w", err)
 	}
 
 	if len(root.ClipInfoList) == 0 {
@@ -78,7 +79,7 @@ func ParseViewPoints(jsonStr string) ([]entity.ViewPoint, error) {
 		} `json:"data"`
 	}
 	if err := json.Unmarshal([]byte(jsonStr), &root); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("parse viewpoints: %w", err)
 	}
 
 	if len(root.Data.ViewPoints) == 0 {

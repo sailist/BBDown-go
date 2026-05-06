@@ -79,7 +79,7 @@ func (c *StandardClient) Head(ctx context.Context, url string, opts ...RequestOp
 func (c *StandardClient) GetRedirectLocation(ctx context.Context, url string) (string, error) {
 	resp, err := c.request(ctx, http.MethodHead, url, nil)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("get redirect location: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -92,7 +92,7 @@ func (c *StandardClient) GetRedirectLocation(ctx context.Context, url string) (s
 func (c *StandardClient) GetContentLength(ctx context.Context, url string) (int64, error) {
 	resp, err := c.request(ctx, http.MethodHead, url, nil)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("get content length: %w", err)
 	}
 	defer resp.Body.Close()
 	return resp.ContentLength, nil
@@ -110,7 +110,7 @@ func (c *StandardClient) request(ctx context.Context, method, urlStr string, bod
 
 		req, err := http.NewRequestWithContext(ctx, method, urlStr, bodyReader)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("create request: %w", err)
 		}
 
 		// Default headers
@@ -169,7 +169,7 @@ func (c *StandardClient) request(ctx context.Context, method, urlStr string, bod
 	}
 
 	if lastErr != nil {
-		return nil, lastErr
+		return nil, fmt.Errorf("http request failed after retries: %w", lastErr)
 	}
 	return resp, nil
 }

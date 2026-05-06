@@ -2,6 +2,7 @@ package parser
 
 import (
 	"encoding/json"
+	"fmt"
 	"regexp"
 	"strconv"
 
@@ -188,7 +189,7 @@ func findAidCid(root map[string]json.RawMessage) (string, string) {
 func ParseDashTracks(jsonStr string, tvApi, appApi, bangumi bool) ([]entity.Video, []entity.Audio, []entity.Audio, []entity.AudioMaterialInfo, error) {
 	var root map[string]json.RawMessage
 	if err := json.Unmarshal([]byte(jsonStr), &root); err != nil {
-		return nil, nil, nil, nil, err
+		return nil, nil, nil, nil, fmt.Errorf("parse dash root: %w", err)
 	}
 
 	var dashObj map[string]json.RawMessage

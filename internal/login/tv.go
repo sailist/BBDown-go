@@ -14,6 +14,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/nilaonai/bbdown-go/internal/core/entity"
 	"github.com/nilaonai/bbdown-go/internal/core/util"
 	"github.com/nilaonai/bbdown-go/pkg/httpclient"
 	"github.com/skip2/go-qrcode"
@@ -26,10 +27,7 @@ const (
 	tvTokenFile   = "BBDownTV.data"
 )
 
-var (
-	// ErrTVQRExpired is returned when the TV QR code has expired.
-	ErrTVQRExpired = errors.New("TV QR code expired")
-)
+
 
 // tvAuthCodeResponse represents the response from the TV auth code API.
 type tvAuthCodeResponse struct {
@@ -81,7 +79,7 @@ func (l *TVLogin) Login(ctx context.Context) error {
 
 	token, err := l.pollLoginStatus(ctx, authCode)
 	if err != nil {
-		return err
+		return fmt.Errorf("poll login status: %w", err)
 	}
 
 	if err := l.saveToken(token); err != nil {
@@ -126,7 +124,7 @@ func (l *TVLogin) getAuthCode(ctx context.Context) (string, string, error) {
 func (l *TVLogin) renderQRCode(authURL string) error {
 	qr, err := NewConsoleQRCode(authURL)
 	if err != nil {
-		return err
+		return fmt.Errorf("render qr code: %w", err)
 	}
 	qr.Render()
 	return nil
@@ -158,8 +156,8 @@ func (l *TVLogin) pollLoginStatus(ctx context.Context, authCode string) (string,
 
 		token, done, err := l.checkLoginStatus(ctx, authCode)
 		if err != nil {
-			if errors.Is(err, ErrTVQRExpired) {
-				return "", err
+			if errors.Is(err, entity.ErrQRExpired) {
+				return "", fmt.Errorf("poll login status: %w", err)
 			}
 			l.logger.Warn("poll login status failed", "err", err)
 			continue
@@ -201,7 +199,7 @@ func (l *TVLogin) checkLoginStatus(ctx context.Context, authCode string) (string
 	switch strconv.Itoa(result.Code) {
 	case "86038":
 		l.logger.Info("QR code expired")
-		return "", false, ErrTVQRExpired
+		return "", false, entity.ErrQRExpired
 	case "86039":
 		l.logger.Debug("waiting for scan")
 		return "", false, nil

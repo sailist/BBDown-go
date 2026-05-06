@@ -685,8 +685,8 @@ func TestParseInput_URLDefaultFetchError(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error for fetch failure, got nil")
 	}
-	if !strings.Contains(err.Error(), "failed to fetch page source") {
-		t.Fatalf("expected 'failed to fetch page source' error, got: %v", err)
+	if !strings.Contains(err.Error(), "fetch web source") {
+		t.Fatalf("expected 'fetch web source' error, got: %v", err)
 	}
 }
 

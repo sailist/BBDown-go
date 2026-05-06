@@ -31,7 +31,7 @@ func (m *MP4BoxMuxer) Mux(ctx context.Context, cfg MuxConfig) error {
 
 	args, err := m.buildMP4BoxArgs(cfg)
 	if err != nil {
-		return err
+		return fmt.Errorf("build mp4box args: %w", err)
 	}
 
 	cmd := execCommandContext(ctx, mp4boxPath, args...)

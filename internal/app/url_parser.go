@@ -86,7 +86,7 @@ func ParseInput(ctx context.Context, client httpclient.Client, input string) (st
 					var err error
 					epID, err = getEpidByCheeseSSID(ctx, client, match[1])
 					if err != nil {
-						return "", err
+						return "", fmt.Errorf("get cheese ssid: %w", err)
 					}
 				}
 			}
@@ -103,7 +103,7 @@ func ParseInput(ctx context.Context, client httpclient.Client, input string) (st
 			if len(match) > 1 {
 				epID, err := getEpidByBangumiSSID(ctx, client, match[1])
 				if err != nil {
-					return "", err
+					return "", fmt.Errorf("get bangumi ssid: %w", err)
 				}
 				avid = fmt.Sprintf("ep:%s", epID)
 			}
@@ -171,7 +171,7 @@ func ParseInput(ctx context.Context, client httpclient.Client, input string) (st
 				mdID := match[1]
 				epID, err := getEpidByMD(ctx, client, mdID)
 				if err != nil {
-					return "", err
+					return "", fmt.Errorf("get md review: %w", err)
 				}
 				avid = fmt.Sprintf("ep:%s", epID)
 			}
@@ -179,7 +179,7 @@ func ParseInput(ctx context.Context, client httpclient.Client, input string) (st
 		default:
 			web, err := getWebSource(ctx, client, input)
 			if err != nil {
-				return "", fmt.Errorf("failed to fetch page source: %w", err)
+				return "", fmt.Errorf("fetch web source: %w", err)
 			}
 			match := stateRegex.FindStringSubmatch(web)
 			if len(match) > 1 {
@@ -226,7 +226,7 @@ func ParseInput(ctx context.Context, client httpclient.Client, input string) (st
 				var err error
 				epID, err = getEpidByCheeseSSID(ctx, client, match[1])
 				if err != nil {
-					return "", err
+					return "", fmt.Errorf("get cheese ssid: %w", err)
 				}
 			}
 		}
@@ -238,7 +238,7 @@ func ParseInput(ctx context.Context, client httpclient.Client, input string) (st
 	} else if strings.HasPrefix(input, "ss") {
 		epID, err := getEpidByBangumiSSID(ctx, client, input[2:])
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("get bangumi ssid: %w", err)
 		}
 		avid = fmt.Sprintf("ep:%s", epID)
 
@@ -247,7 +247,7 @@ func ParseInput(ctx context.Context, client httpclient.Client, input string) (st
 		if len(match) > 1 {
 			epID, err := getEpidByMD(ctx, client, match[1])
 			if err != nil {
-				return "", err
+				return "", fmt.Errorf("get md review: %w", err)
 			}
 			avid = fmt.Sprintf("ep:%s", epID)
 		}
@@ -281,7 +281,7 @@ func getEpidByCheeseSSID(ctx context.Context, client httpclient.Client, ssid str
 	api := fmt.Sprintf("https://api.bilibili.com/pugv/view/web/season?season_id=%s", ssid)
 	body, err := fetchBody(ctx, client, api)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("fetch cheese season: %w", err)
 	}
 	var result struct {
 		Data struct {
@@ -303,7 +303,7 @@ func getEpidByBangumiSSID(ctx context.Context, client httpclient.Client, ssID st
 	api := fmt.Sprintf("https://%s/pgc/view/web/season?season_id=%s", defaultEpHost, ssID)
 	body, err := fetchBody(ctx, client, api)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("fetch bangumi season: %w", err)
 	}
 	var result struct {
 		Result struct {
@@ -325,7 +325,7 @@ func getEpidByMD(ctx context.Context, client httpclient.Client, mdID string) (st
 	api := fmt.Sprintf("https://api.bilibili.com/pgc/review/user?media_id=%s", mdID)
 	body, err := fetchBody(ctx, client, api)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("fetch md review: %w", err)
 	}
 	var result struct {
 		Result struct {
@@ -358,7 +358,7 @@ func fetchBody(ctx context.Context, client httpclient.Client, url string) ([]byt
 func getWebSource(ctx context.Context, client httpclient.Client, url string) (string, error) {
 	body, err := fetchBody(ctx, client, url)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("fetch web source: %w", err)
 	}
 	return string(body), nil
 }

@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 	"unicode"
 
@@ -56,7 +58,7 @@ func getSubtitlesFromAPI1(ctx context.Context, client httpclient.Client, cfg *co
 	url := fmt.Sprintf("https://api.bilibili.com/x/web-interface/view?aid=%s&cid=%s", aid, cid)
 	data, err := doGet(ctx, client, url, cfg)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("get subtitles from api1: %w", err)
 	}
 
 	var resp struct {
@@ -70,7 +72,7 @@ func getSubtitlesFromAPI1(ctx context.Context, client httpclient.Client, cfg *co
 		} `json:"data"`
 	}
 	if err := json.Unmarshal(data, &resp); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("parse subtitles api1: %w", err)
 	}
 
 	var subtitles []entity.Subtitle
@@ -93,7 +95,7 @@ func getSubtitlesFromAPI2(ctx context.Context, client httpclient.Client, cfg *co
 	url := fmt.Sprintf("https://api.bilibili.com/x/player/wbi/v2?cid=%s&aid=%s", cid, aid)
 	data, err := doGet(ctx, client, url, cfg)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("get subtitles from api2: %w", err)
 	}
 
 	var resp struct {
@@ -107,7 +109,7 @@ func getSubtitlesFromAPI2(ctx context.Context, client httpclient.Client, cfg *co
 		} `json:"data"`
 	}
 	if err := json.Unmarshal(data, &resp); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("parse subtitles api2: %w", err)
 	}
 
 	var subtitles []entity.Subtitle
@@ -139,7 +141,7 @@ func getIntlSubtitlesFromAPI1(ctx context.Context, client httpclient.Client, cfg
 	url := fmt.Sprintf("https://%s/intl/gateway/web/v2/subtitle?episode_id=%s", host, epid)
 	data, err := doGet(ctx, client, url, cfg)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("get intl subtitles from api1: %w", err)
 	}
 
 	var resp struct {
@@ -151,7 +153,7 @@ func getIntlSubtitlesFromAPI1(ctx context.Context, client httpclient.Client, cfg
 		} `json:"data"`
 	}
 	if err := json.Unmarshal(data, &resp); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("parse intl subtitles api1: %w", err)
 	}
 
 	var subtitles []entity.Subtitle
@@ -187,7 +189,7 @@ func getIntlSubtitlesFromAPI2(ctx context.Context, client httpclient.Client, cfg
 	}
 	data, err := doGet(ctx, client, url, cfg)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("get intl subtitles from api2: %w", err)
 	}
 
 	var resp struct {
@@ -205,7 +207,7 @@ func getIntlSubtitlesFromAPI2(ctx context.Context, client httpclient.Client, cfg
 		} `json:"result"`
 	}
 	if err := json.Unmarshal(data, &resp); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("parse intl subtitles api2: %w", err)
 	}
 
 	if len(resp.Result.Modules) == 0 {
@@ -246,13 +248,51 @@ func doGet(ctx context.Context, client httpclient.Client, url string, cfg *confi
 	}
 	resp, err := client.Get(ctx, url, opts...)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("http get: %w", err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
-	return io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("read body: %w", err)
+	}
+	return body, nil
+}
+
+// SaveSubtitle downloads a subtitle from its URL and writes it to Path.
+// If the path ends with .srt, the JSON response is converted to SRT format.
+func SaveSubtitle(ctx context.Context, client httpclient.Client, sub entity.Subtitle) error {
+	resp, err := client.Get(ctx, sub.Url)
+	if err != nil {
+		return fmt.Errorf("download subtitle %s: %w", sub.Lan, err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("read subtitle body %s: %w", sub.Lan, err)
+	}
+
+	content := string(body)
+	if strings.HasSuffix(sub.Path, ".srt") {
+		srt, err := ConvertSubFromJSON(content)
+		if err != nil {
+			return fmt.Errorf("convert subtitle %s to srt: %w", sub.Lan, err)
+		}
+		content = srt
+	}
+
+	if err := os.MkdirAll(filepath.Dir(sub.Path), 0o755); err != nil {
+		return fmt.Errorf("create subtitle dir: %w", err)
+	}
+
+	if err := os.WriteFile(sub.Path, []byte(content), 0o644); err != nil {
+		return fmt.Errorf("write subtitle %s: %w", sub.Lan, err)
+	}
+
+	return nil
 }
 
 func hasEmptyURL(subs []entity.Subtitle) bool {
@@ -274,7 +314,7 @@ func ConvertSubFromJSON(jsonStr string) (string, error) {
 		} `json:"body"`
 	}
 	if err := json.Unmarshal([]byte(jsonStr), &sub); err != nil {
-		return "", err
+		return "", fmt.Errorf("parse subtitle json: %w", err)
 	}
 
 	var b strings.Builder
