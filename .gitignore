@@ -16,3 +16,4 @@ vendor/
 *.swp
 BBDown.data
 BBDownTV.data
+/.go/

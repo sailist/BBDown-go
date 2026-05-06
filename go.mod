@@ -1,12 +1,13 @@
 module github.com/nilaonai/bbdown-go
 
-go 1.20
+go 1.25.0
 
 require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/schollz/progressbar/v3 v3.14.1
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	github.com/spf13/cobra v1.8.0
+	golang.org/x/exp v0.0.0-20231006140011-7918f672742d
 	golang.org/x/sync v0.20.0
 )
 
