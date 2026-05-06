@@ -418,14 +418,14 @@ bbdown-go/
 - 添加 `internal/core/parser/flv_test.go`
 - **对应 C#**: `Parser.cs` 中 FLV 部分
 
-#### 提交 17: `feat(internal/core/parser): add clip info and viewpoint parser`
+#### 提交 17: `feat(internal/core/parser): add clip info and viewpoint parser` ✅
 - 实现 `internal/core/parser/clip.go`：
   - `ParseClipInfoList(jsonStr string) ([]entity.ViewPoint, error)`
   - 番剧片头片尾转 chapter（正片 → 片头 → 正片 → 片尾）
 - 添加 `internal/core/parser/clip_test.go`
 - **对应 C#**: `Parser.cs` 中 clip_info_list 部分
 
-#### 提交 18: `feat(internal/core/parser): wire up ExtractTracks orchestrator`
+#### 提交 18: `feat(internal/core/parser): wire up ExtractTracks orchestrator` ✅
 - 实现 `internal/core/parser/parser.go`：
   - `ExtractTracks(ctx, aidOri, aid, cid, epid string, opts ExtractOptions) (*ParsedResult, error)`
   - 整合 API builder → HTTP GET → DASH/FLV/INTL 分支 → clip parser
@@ -434,7 +434,7 @@ bbdown-go/
   - mock HTTP client，测试各分支逻辑
 - **对应 C#**: `Parser.cs` 整体
 
-#### 提交 19: `feat(internal/core/api): add APP gRPC helper and protobuf definitions`
+#### 提交 19: `feat(internal/core/api): add APP gRPC helper and protobuf definitions` ✅
 - 从 `BBDown/BBDown.Core/APP/*.proto` 复制到 `internal/core/api/proto/`
 - 配置 `buf` 或 `protoc` 生成 Go 代码
 - 实现 `internal/core/api/app.go`：
