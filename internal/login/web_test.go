@@ -64,7 +64,7 @@ func noopLogger() *slog.Logger {
 func TestWebLogin_generateQRCode(t *testing.T) {
 	generateResp := `{"data":{"url":"https://passport.bilibili.com/x/passport-login/web/qrcode/generate?source=main-fe-header&qrcode_key=abc123","qrcode_key":"abc123"}}`
 	client := newMockClientWithResponse(generateResp)
-	wl := NewWebLogin(client, noopLogger())
+	wl := NewWebLogin(client, noopLogger(), t.TempDir())
 
 	loginURL, key, err := wl.generateQRCode(context.Background())
 	if err != nil {
@@ -81,7 +81,7 @@ func TestWebLogin_generateQRCode(t *testing.T) {
 func TestWebLogin_generateQRCode_EmptyResponse(t *testing.T) {
 	generateResp := `{"data":{"url":"","qrcode_key":""}}`
 	client := newMockClientWithResponse(generateResp)
-	wl := NewWebLogin(client, noopLogger())
+	wl := NewWebLogin(client, noopLogger(), t.TempDir())
 
 	_, _, err := wl.generateQRCode(context.Background())
 	if err == nil {
@@ -90,7 +90,7 @@ func TestWebLogin_generateQRCode_EmptyResponse(t *testing.T) {
 }
 
 func TestWebLogin_extractCookie(t *testing.T) {
-	wl := NewWebLogin(nil, noopLogger())
+	wl := NewWebLogin(nil, noopLogger(), t.TempDir())
 
 	tests := []struct {
 		name        string
@@ -136,16 +136,8 @@ func TestWebLogin_extractCookie(t *testing.T) {
 
 func TestWebLogin_saveCookie(t *testing.T) {
 	tmpDir := t.TempDir()
-	origWd, err := os.Getwd()
-	if err != nil {
-		t.Fatalf("failed to get working directory: %v", err)
-	}
-	if err := os.Chdir(tmpDir); err != nil {
-		t.Fatalf("failed to change directory: %v", err)
-	}
-	defer os.Chdir(origWd)
 
-	wl := NewWebLogin(nil, noopLogger())
+	wl := NewWebLogin(nil, noopLogger(), tmpDir)
 	cookie := "SESSDATA=abc123;bili_jct=xyz"
 	if err := wl.saveCookie(cookie); err != nil {
 		t.Fatalf("expected no error, got: %v", err)
@@ -163,14 +155,6 @@ func TestWebLogin_saveCookie(t *testing.T) {
 
 func TestWebLogin_pollLoginStatus_Success(t *testing.T) {
 	tmpDir := t.TempDir()
-	origWd, err := os.Getwd()
-	if err != nil {
-		t.Fatalf("failed to get working directory: %v", err)
-	}
-	if err := os.Chdir(tmpDir); err != nil {
-		t.Fatalf("failed to change directory: %v", err)
-	}
-	defer os.Chdir(origWd)
 
 	callCount := 0
 	client := &mockClient{
@@ -207,12 +191,12 @@ func TestWebLogin_pollLoginStatus_Success(t *testing.T) {
 		},
 	}
 
-	wl := NewWebLogin(client, noopLogger())
+	wl := NewWebLogin(client, noopLogger(), tmpDir)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	err = wl.Login(ctx)
+	err := wl.Login(ctx)
 	if err != nil {
 		t.Fatalf("expected no error, got: %v", err)
 	}
@@ -244,7 +228,7 @@ func TestWebLogin_pollLoginStatus_Expired(t *testing.T) {
 		},
 	}
 
-	wl := NewWebLogin(client, noopLogger())
+	wl := NewWebLogin(client, noopLogger(), t.TempDir())
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -271,7 +255,7 @@ func TestWebLogin_pollLoginStatus_ContextCancel(t *testing.T) {
 		},
 	}
 
-	wl := NewWebLogin(client, noopLogger())
+	wl := NewWebLogin(client, noopLogger(), t.TempDir())
 
 	ctx, cancel := context.WithCancel(context.Background())
 	go func() {

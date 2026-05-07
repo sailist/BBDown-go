@@ -1,7 +1,7 @@
 .PHONY: build test lint fmt vet clean
 
 build:
-	go build -o bbdown ./cmd/bbdown
+	go build -o bbdown-go ./cmd/bbdown
 
 test:
 	go test ./...
@@ -16,4 +16,4 @@ vet:
 	go vet ./...
 
 clean:
-	rm -f bbdown bbdown-go
+	rm -f bbdown-go

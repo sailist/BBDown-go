@@ -93,7 +93,7 @@ func TestTVLogin_getAuthCode(t *testing.T) {
 	}
 
 	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
-	tv := NewTVLogin(client, logger)
+	tv := NewTVLogin(client, logger, t.TempDir())
 
 	url, authCode, err := tv.getAuthCode(context.Background())
 	if err != nil {
@@ -119,7 +119,7 @@ func TestTVLogin_getAuthCode_EmptyResponse(t *testing.T) {
 	}
 
 	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
-	tv := NewTVLogin(client, logger)
+	tv := NewTVLogin(client, logger, t.TempDir())
 
 	_, _, err := tv.getAuthCode(context.Background())
 	if err == nil {
@@ -168,7 +168,7 @@ func TestTVLogin_checkLoginStatus(t *testing.T) {
 			}
 
 			logger := slog.New(slog.NewTextHandler(io.Discard, nil))
-			tv := NewTVLogin(client, logger)
+			tv := NewTVLogin(client, logger, t.TempDir())
 
 			token, done, err := tv.checkLoginStatus(context.Background(), "auth123")
 
@@ -197,7 +197,7 @@ func TestTVLogin_pollLoginStatus(t *testing.T) {
 	}
 
 	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
-	tv := NewTVLogin(client, logger)
+	tv := NewTVLogin(client, logger, t.TempDir())
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -223,7 +223,7 @@ func TestTVLogin_pollLoginStatus_Expired(t *testing.T) {
 	}
 
 	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
-	tv := NewTVLogin(client, logger)
+	tv := NewTVLogin(client, logger, t.TempDir())
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -245,7 +245,7 @@ func TestTVLogin_pollLoginStatus_ContextCancelled(t *testing.T) {
 	}
 
 	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
-	tv := NewTVLogin(client, logger)
+	tv := NewTVLogin(client, logger, t.TempDir())
 
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
@@ -258,12 +258,9 @@ func TestTVLogin_pollLoginStatus_ContextCancelled(t *testing.T) {
 
 func TestTVLogin_saveToken(t *testing.T) {
 	tmpDir := t.TempDir()
-	oldWd, _ := os.Getwd()
-	os.Chdir(tmpDir)
-	defer os.Chdir(oldWd)
 
 	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
-	tv := NewTVLogin(nil, logger)
+	tv := NewTVLogin(nil, logger, tmpDir)
 
 	err := tv.saveToken("testtoken")
 	if err != nil {

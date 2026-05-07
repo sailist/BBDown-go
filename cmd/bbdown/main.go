@@ -6,13 +6,16 @@ import (
 	"log/slog"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 
 	"github.com/nilaonai/bbdown-go/internal/app"
 	"github.com/nilaonai/bbdown-go/internal/cli"
+	"github.com/nilaonai/bbdown-go/internal/config"
 	"github.com/nilaonai/bbdown-go/internal/core/fetcher"
 	"github.com/nilaonai/bbdown-go/internal/core/parser"
 	"github.com/nilaonai/bbdown-go/internal/download"
+	"github.com/nilaonai/bbdown-go/internal/login"
 	"github.com/nilaonai/bbdown-go/internal/muxer"
 	"github.com/nilaonai/bbdown-go/pkg/httpclient"
 )
@@ -20,6 +23,12 @@ import (
 func init() {
 	cli.RunRoot = func(ctx context.Context, opt *cli.Option) error {
 		return runApp(ctx, opt)
+	}
+	cli.RunLogin = func(ctx context.Context) error {
+		return runLogin(ctx)
+	}
+	cli.RunLoginTV = func(ctx context.Context) error {
+		return runLoginTV(ctx)
 	}
 }
 
@@ -41,9 +50,18 @@ func main() {
 	}))
 	slog.SetDefault(logger)
 
+	// Load config file from APP_DIR (matching C# Program.APP_DIR behavior)
+	configPath := filepath.Join(app.AppDir, "BBDown.config")
+	args, err := config.HandleConfig(os.Args[1:], configPath)
+	if err != nil {
+		logger.Error("failed to load config file", "error", err)
+		os.Exit(1)
+	}
+
 	// CLI option and root command
 	opt := cli.NewOption()
 	cmd := cli.NewRootCommand(opt)
+	cmd.SetArgs(args)
 
 	// Signal handling
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
@@ -66,6 +84,18 @@ func runApp(ctx context.Context, opt *cli.Option) error {
 	}()
 
 	return doWork(ctx, opt)
+}
+
+func runLogin(ctx context.Context) error {
+	client := httpclient.NewStandardClient(slog.Default())
+	wl := login.NewWebLogin(client, slog.Default(), app.AppDir)
+	return wl.Login(ctx)
+}
+
+func runLoginTV(ctx context.Context) error {
+	client := httpclient.NewStandardClient(slog.Default())
+	tl := login.NewTVLogin(client, slog.Default(), app.AppDir)
+	return tl.Login(ctx)
 }
 
 func doWork(ctx context.Context, opt *cli.Option) error {

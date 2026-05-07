@@ -205,6 +205,11 @@ func NewRootCommand(opt *Option) *cobra.Command {
 	cmd.Flags().BoolVar(&opt.BandwithAscending, "bandwith-ascending", false, "sort by bandwidth ascending (deprecated)")
 	_ = cmd.Flags().MarkHidden("bandwith-ascending")
 
+	// Subcommands.
+	cmd.AddCommand(NewLoginCommand())
+	cmd.AddCommand(NewLoginTVCommand())
+	cmd.AddCommand(NewServeCommand(opt))
+
 	return cmd
 }
 

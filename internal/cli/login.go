@@ -33,13 +33,13 @@ func NewLoginTVCommand() *cobra.Command {
 }
 
 // RunLogin performs WEB QR code login.
-func RunLogin(ctx context.Context) error {
+var RunLogin = func(ctx context.Context) error {
 	slog.DebugContext(ctx, "login command executed")
 	return fmt.Errorf("not implemented: %w", fmt.Errorf("login handler not yet wired"))
 }
 
 // RunLoginTV performs TV QR code login.
-func RunLoginTV(ctx context.Context) error {
+var RunLoginTV = func(ctx context.Context) error {
 	slog.DebugContext(ctx, "logintv command executed")
 	return fmt.Errorf("not implemented: %w", fmt.Errorf("logintv handler not yet wired"))
 }

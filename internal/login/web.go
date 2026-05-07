@@ -48,11 +48,13 @@ type qrPollResponse struct {
 type WebLogin struct {
 	client httpclient.Client
 	logger *slog.Logger
+	appDir string
 }
 
 // NewWebLogin creates a new WebLogin instance.
-func NewWebLogin(client httpclient.Client, logger *slog.Logger) *WebLogin {
-	return &WebLogin{client: client, logger: logger}
+// appDir is the directory where credential files (BBDown.data) are saved.
+func NewWebLogin(client httpclient.Client, logger *slog.Logger, appDir string) *WebLogin {
+	return &WebLogin{client: client, logger: logger, appDir: appDir}
 }
 
 // Login performs the WEB QR code login flow.
@@ -126,7 +128,7 @@ func (l *WebLogin) renderQRCode(loginURL string) error {
 }
 
 func (l *WebLogin) saveQRCodeImage(loginURL string) error {
-	if err := qrcode.WriteFile(loginURL, qrcode.Medium, 7, qrCodeFile); err != nil {
+	if err := qrcode.WriteFile(loginURL, qrcode.Medium, 5, qrCodeFile); err != nil {
 		return fmt.Errorf("failed to write QR code file: %w", err)
 	}
 	return nil
@@ -229,12 +231,7 @@ func (l *WebLogin) extractCookie(redirectURL string) (string, error) {
 }
 
 func (l *WebLogin) saveCookie(cookie string) error {
-	wd, err := os.Getwd()
-	if err != nil {
-		return fmt.Errorf("failed to get working directory: %w", err)
-	}
-
-	path := filepath.Join(wd, cookieFile)
+	path := filepath.Join(l.appDir, cookieFile)
 	if err := os.WriteFile(path, []byte(cookie), 0o600); err != nil {
 		return fmt.Errorf("failed to write cookie file: %w", err)
 	}

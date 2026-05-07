@@ -28,14 +28,18 @@ type WorkConfig struct {
 	Config                 *config.Config
 }
 
-// appDir is the directory used for credential files. Override for tests.
-var appDir = func() string {
+// AppDir is the directory used for credential and config files.
+// It defaults to the executable's directory, matching C# Program.APP_DIR.
+var AppDir = func() string {
 	ex, err := os.Executable()
 	if err != nil {
 		return "."
 	}
 	return filepath.Dir(ex)
 }()
+
+// appDir is kept for backward compatibility within this package.
+var appDir = AppDir
 
 // SetupWork performs all pre-download setup and validation.
 func SetupWork(opt *cli.Option, logger *slog.Logger) (*WorkConfig, error) {

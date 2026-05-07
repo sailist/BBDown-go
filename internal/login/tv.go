@@ -49,11 +49,13 @@ type tvPollResponse struct {
 type TVLogin struct {
 	client httpclient.Client
 	logger *slog.Logger
+	appDir string
 }
 
 // NewTVLogin creates a new TVLogin instance.
-func NewTVLogin(client httpclient.Client, logger *slog.Logger) *TVLogin {
-	return &TVLogin{client: client, logger: logger}
+// appDir is the directory where credential files (BBDownTV.data) are saved.
+func NewTVLogin(client httpclient.Client, logger *slog.Logger, appDir string) *TVLogin {
+	return &TVLogin{client: client, logger: logger, appDir: appDir}
 }
 
 // Login performs the TV QR code login flow.
@@ -131,7 +133,7 @@ func (l *TVLogin) renderQRCode(authURL string) error {
 }
 
 func (l *TVLogin) saveQRCodeImage(authURL string) error {
-	if err := qrcode.WriteFile(authURL, qrcode.Medium, 7, tvQRCodeFile); err != nil {
+	if err := qrcode.WriteFile(authURL, qrcode.Medium, 5, tvQRCodeFile); err != nil {
 		return fmt.Errorf("failed to write QR code file: %w", err)
 	}
 	return nil
@@ -212,12 +214,7 @@ func (l *TVLogin) checkLoginStatus(ctx context.Context, authCode string) (string
 }
 
 func (l *TVLogin) saveToken(token string) error {
-	wd, err := os.Getwd()
-	if err != nil {
-		return fmt.Errorf("failed to get working directory: %w", err)
-	}
-
-	path := filepath.Join(wd, tvTokenFile)
+	path := filepath.Join(l.appDir, tvTokenFile)
 	content := "access_token=" + token
 	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
 		return fmt.Errorf("failed to write token file: %w", err)

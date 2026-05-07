@@ -22,7 +22,7 @@ func NewConsoleQRCode(text string) (*ConsoleQRCode, error) {
 
 // Render prints the QR code to stdout using Unicode block characters.
 func (c *ConsoleQRCode) Render() {
-	c.RenderWithSymbols("██", "  ")
+	c.RenderWithSymbols("█", " ")
 }
 
 // RenderWithSymbols prints the QR code with custom dark and light symbols.
