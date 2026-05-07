@@ -209,7 +209,7 @@ func NewRootCommand(opt *Option) *cobra.Command {
 }
 
 // RunRoot is the entry point for the root command.
-func RunRoot(ctx context.Context, opt *Option) error {
+var RunRoot = func(ctx context.Context, opt *Option) error {
 	slog.DebugContext(ctx, "root command executed", "url", opt.URL)
 	return fmt.Errorf("not implemented: %w", fmt.Errorf("root command handler not yet wired"))
 }
