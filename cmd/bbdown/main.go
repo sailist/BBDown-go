@@ -108,6 +108,9 @@ func doWork(ctx context.Context, opt *cli.Option) error {
 		return fmt.Errorf("setup work: %w", err)
 	}
 
+	// Propagate cookie to HTTP client so video CDN requests are authenticated
+	client.SetCookie(workCfg.Config.Cookie)
+
 	// Get video info
 	aidOri, vInfo, _, err := app.GetVideoInfo(ctx, opt, workCfg.Input, app.Deps{
 		FetcherFactory: func(id string, useIntl bool) (fetcher.Fetcher, error) {

@@ -40,6 +40,7 @@ type StandardClient struct {
 	client    *http.Client
 	logger    *slog.Logger
 	userAgent string
+	cookie    string
 }
 
 func NewStandardClient(logger *slog.Logger) *StandardClient {
@@ -102,6 +103,10 @@ func (c *StandardClient) GetRedirectLocation(ctx context.Context, url string) (s
 	return url, nil
 }
 
+func (c *StandardClient) SetCookie(cookie string) {
+	c.cookie = cookie
+}
+
 func (c *StandardClient) GetContentLength(ctx context.Context, url string) (int64, error) {
 	resp, err := c.request(ctx, http.MethodHead, url, nil)
 	if err != nil {
@@ -130,16 +135,18 @@ func (c *StandardClient) request(ctx context.Context, method, urlStr string, bod
 		req.Header.Set("User-Agent", c.userAgent)
 		req.Header.Set("Cache-Control", "no-cache")
 
-		if strings.Contains(urlStr, "api.bilibili.com") {
-			req.Header.Set("Referer", "https://www.bilibili.com/")
-		}
-		if strings.Contains(urlStr, "/ep") || strings.Contains(urlStr, "/ss") {
-			cookie := req.Header.Get("Cookie")
-			if cookie != "" {
-				req.Header.Set("Cookie", cookie+";CURRENT_FNVAL=4048;")
-			} else {
-				req.Header.Set("Cookie", ";CURRENT_FNVAL=4048;")
+		if !strings.Contains(urlStr, "platform=android_tv_yst") && !strings.Contains(urlStr, "platform=android") {
+			if strings.Contains(urlStr, "bilibili.com") || strings.Contains(urlStr, "bilivideo") {
+				req.Header.Set("Referer", "https://www.bilibili.com/")
 			}
+		}
+
+		cookie := c.cookie
+		if strings.Contains(urlStr, "/ep") || strings.Contains(urlStr, "/ss") {
+			cookie += ";CURRENT_FNVAL=4048;"
+		}
+		if cookie != "" {
+			req.Header.Set("Cookie", cookie)
 		}
 
 		// Apply options
