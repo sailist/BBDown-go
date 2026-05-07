@@ -1,6 +1,7 @@
 package app
 
 import (
+	"bufio"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -8,10 +9,13 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/nilaonai/bbdown-go/internal/cli"
+	"github.com/nilaonai/bbdown-go/internal/config"
 	"github.com/nilaonai/bbdown-go/internal/core/entity"
+	"github.com/nilaonai/bbdown-go/internal/core/parser"
 	"github.com/nilaonai/bbdown-go/internal/core/util"
 	"github.com/nilaonai/bbdown-go/internal/download"
 	"github.com/nilaonai/bbdown-go/internal/muxer"
@@ -20,10 +24,32 @@ import (
 
 // DownloadDeps holds dependencies for DownloadPage, enabling test mocking.
 type DownloadDeps struct {
-	HTTPClient httpclient.Client
-	Logger     *slog.Logger
-	Downloader download.Downloader
-	Muxer      muxer.Muxer
+	HTTPClient             httpclient.Client
+	Logger                 *slog.Logger
+	Downloader             download.Downloader
+	Muxer                  muxer.Muxer
+	ExtractTracks          func(ctx context.Context, client httpclient.Client, cfg *config.Config, logger *slog.Logger, aidOri, aid, cid, epid string, opts parser.ExtractOptions) (*entity.ParsedResult, error)
+	SelectTrackInteractive func(prompt string, max int) (int, error)
+}
+
+// selectTrackInteractive reads user input from stdin to select a track index.
+// It is a package-level variable so tests can override it.
+var selectTrackInteractive = func(prompt string, max int) (int, error) {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print(prompt)
+	text, err := reader.ReadString('\n')
+	if err != nil {
+		return 0, err
+	}
+	text = strings.TrimSpace(text)
+	if text == "" {
+		return 0, nil
+	}
+	idx, err := strconv.Atoi(text)
+	if err != nil || idx < 0 || idx >= max {
+		return 0, nil
+	}
+	return idx, nil
 }
 
 // DownloadPage handles downloading a single page (part/episode).
@@ -155,8 +181,170 @@ func DownloadPage(
 		return nil
 	}
 
-	// TODO: part 2 - stream selection and download
+	// Part 2: stream selection and download
+	extractTracks := deps.ExtractTracks
+	if extractTracks == nil {
+		extractTracks = parser.ExtractTracks
+	}
+
+	selectInteractive := deps.SelectTrackInteractive
+	if selectInteractive == nil {
+		selectInteractive = selectTrackInteractive
+	}
+
+	opts := parser.ExtractOptions{
+		TvApi:    opt.UseTvApi,
+		IntlApi:  opt.UseIntlApi,
+		AppApi:   opt.UseAppApi,
+		Encoding: workCfg.FirstEncoding,
+		Qn:       opt.DfnPriority,
+	}
+
+	parsedResult, err := extractTracks(ctx, deps.HTTPClient, workCfg.Config, deps.Logger, workCfg.AidOri, p.Aid, p.Cid, p.Epid, opts)
+	if err != nil {
+		return fmt.Errorf("extract tracks: %w", err)
+	}
+
+	// Merge extra points
+	if len(p.Points) == 0 {
+		p.Points = parsedResult.ExtraPoints
+	}
+
+	// Write debug JSON
+	if opt.Debug {
+		debugPath := fmt.Sprintf("%s/%s.debug.json", p.Aid, p.Aid)
+		_ = os.WriteFile(debugPath, []byte(parsedResult.WebJsonString), 0o644)
+	}
+
+	// Handle DASH case (VideoTracks or AudioTracks exist, no Clips)
+	if (len(parsedResult.VideoTracks) > 0 || len(parsedResult.AudioTracks) > 0) && len(parsedResult.Clips) == 0 {
+		// Filter tracks based on options
+		if opt.AudioOnly {
+			parsedResult.VideoTracks = nil
+		}
+		if opt.VideoOnly {
+			parsedResult.AudioTracks = nil
+			parsedResult.BackgroundAudioTracks = nil
+			parsedResult.RoleAudioList = nil
+		}
+
+		// Sort tracks
+		parsedResult.VideoTracks = SortVideoTracks(parsedResult.VideoTracks, workCfg.DfnPriority, workCfg.EncodingPriority, opt.VideoAscending)
+		parsedResult.AudioTracks = SortAudioTracks(parsedResult.AudioTracks, workCfg.EncodingPriority, opt.AudioAscending)
+		parsedResult.BackgroundAudioTracks = SortAudioTracks(parsedResult.BackgroundAudioTracks, workCfg.EncodingPriority, opt.AudioAscending)
+
+		// Print tracks info
+		if !opt.HideStreams {
+			printStreamsImpl(deps.Logger, parsedResult.VideoTracks, parsedResult.AudioTracks, parsedResult.BackgroundAudioTracks, parsedResult.RoleAudioList)
+		}
+
+		// Early return if OnlyShowInfo
+		if opt.OnlyShowInfo {
+			return nil
+		}
+
+		selected := false
+
+		// Interactive selection
+		var selectedVideo *entity.Video
+		var selectedAudio *entity.Audio
+		var selectedBackgroundAudio *entity.Audio
+
+		if opt.Interactive && !selected {
+			if len(parsedResult.VideoTracks) > 0 {
+				idx, _ := selectInteractive("Select video track: ", len(parsedResult.VideoTracks))
+				if idx >= 0 && idx < len(parsedResult.VideoTracks) {
+					selectedVideo = &parsedResult.VideoTracks[idx]
+				}
+			}
+			if len(parsedResult.AudioTracks) > 0 {
+				idx, _ := selectInteractive("Select audio track: ", len(parsedResult.AudioTracks))
+				if idx >= 0 && idx < len(parsedResult.AudioTracks) {
+					selectedAudio = &parsedResult.AudioTracks[idx]
+				}
+			}
+			selected = true
+		} else {
+			if len(parsedResult.VideoTracks) > 0 {
+				selectedVideo = &parsedResult.VideoTracks[0]
+			}
+			if len(parsedResult.AudioTracks) > 0 {
+				selectedAudio = &parsedResult.AudioTracks[0]
+			}
+		}
+		if len(parsedResult.BackgroundAudioTracks) > 0 {
+			selectedBackgroundAudio = &parsedResult.BackgroundAudioTracks[0]
+		}
+
+		// TODO: part 3 - download & mux
+		_ = selectedVideo
+		_ = selectedAudio
+		_ = selectedBackgroundAudio
+		return nil
+	}
+
+	// Handle FLV case (Clips and Dfns exist)
+	if len(parsedResult.Clips) > 0 && len(parsedResult.Dfns) > 0 {
+		parsedResult.VideoTracks = SortVideoTracks(parsedResult.VideoTracks, workCfg.DfnPriority, workCfg.EncodingPriority, opt.VideoAscending)
+
+		// Interactive quality selection if needed (re-parse with selected dfn)
+		selected := false
+		if opt.Interactive && !selected && len(parsedResult.VideoTracks) > 0 {
+			idx, _ := selectInteractive("Select video quality: ", len(parsedResult.VideoTracks))
+			_ = idx
+			// In C#, this would re-parse with selected dfn
+			selected = true
+		}
+
+		if !opt.HideStreams {
+			printStreamsImpl(deps.Logger, parsedResult.VideoTracks, nil, nil, nil)
+		}
+
+		if opt.OnlyShowInfo {
+			return nil
+		}
+
+		// TODO: part 3 - download clips & merge
+		return nil
+	}
+
+	// Handle failure: if no tracks and no clips, log error
+	if len(parsedResult.VideoTracks) == 0 && len(parsedResult.AudioTracks) == 0 && len(parsedResult.Clips) == 0 {
+		deps.Logger.Error("no tracks or clips found")
+	}
+
 	return nil
+}
+
+var printStreamsImpl = func(logger *slog.Logger, videos []entity.Video, audios []entity.Audio, bgAudios []entity.Audio, roleAudioList []entity.AudioMaterialInfo) {
+	defaultPrintStreams(logger, videos, audios, bgAudios, roleAudioList)
+}
+
+func defaultPrintStreams(logger *slog.Logger, videos []entity.Video, audios []entity.Audio, bgAudios []entity.Audio, roleAudioList []entity.AudioMaterialInfo) {
+	if len(videos) > 0 {
+		logger.Info("video tracks")
+		for i, v := range videos {
+			logger.Info(fmt.Sprintf("  [%d] %s | %s | %s | %s | %dKbps", i, v.Dfn, v.Res, v.Fps, v.Codecs, v.Bandwith))
+		}
+	}
+	if len(audios) > 0 {
+		logger.Info("audio tracks")
+		for i, a := range audios {
+			logger.Info(fmt.Sprintf("  [%d] %s | %s | %dKbps", i, a.Dfn, a.Codecs, a.Bandwith))
+		}
+	}
+	if len(bgAudios) > 0 {
+		logger.Info("background audio tracks")
+		for i, a := range bgAudios {
+			logger.Info(fmt.Sprintf("  [%d] %s | %s | %dKbps", i, a.Dfn, a.Codecs, a.Bandwith))
+		}
+	}
+	if len(roleAudioList) > 0 {
+		logger.Info("role audio tracks")
+		for i, r := range roleAudioList {
+			logger.Info(fmt.Sprintf("  [%d] %s - %s", i, r.Title, r.PersonName))
+		}
+	}
 }
 
 // FetchPoints fetches viewpoint/chapter data from Bilibili API.

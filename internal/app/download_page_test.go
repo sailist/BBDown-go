@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"io"
+	"log/slog"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -12,6 +13,7 @@ import (
 	"github.com/nilaonai/bbdown-go/internal/cli"
 	"github.com/nilaonai/bbdown-go/internal/config"
 	"github.com/nilaonai/bbdown-go/internal/core/entity"
+	"github.com/nilaonai/bbdown-go/internal/core/parser"
 	"github.com/nilaonai/bbdown-go/pkg/httpclient"
 )
 
@@ -318,6 +320,407 @@ func TestDownloadPage_OnlyShowInfo(t *testing.T) {
 	}
 }
 
+// Part 2 tests
+
+func TestDownloadPage_ExtractTracksCalled(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Chdir(tmpDir)
+
+	opt := cli.NewOption()
+	vInfo := &entity.VInfo{Title: "Test Video"}
+	p := &entity.Page{Index: 1, Aid: "123", Cid: "456", Title: "P1"}
+	workCfg := &WorkConfig{SavePathFormat: "test", Config: config.NewConfig()}
+
+	extractCalled := false
+	extractTracks := func(ctx context.Context, client httpclient.Client, cfg *config.Config, logger *slog.Logger, aidOri, aid, cid, epid string, opts parser.ExtractOptions) (*entity.ParsedResult, error) {
+		extractCalled = true
+		if aid != "123" || cid != "456" {
+			t.Errorf("unexpected aid/cid: %s/%s", aid, cid)
+		}
+		return &entity.ParsedResult{}, nil
+	}
+
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks}
+	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !extractCalled {
+		t.Error("expected ExtractTracks to be called")
+	}
+}
+
+func TestDownloadPage_MergeExtraPoints(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Chdir(tmpDir)
+
+	opt := cli.NewOption()
+	vInfo := &entity.VInfo{Title: "Test Video"}
+	p := &entity.Page{Index: 1, Aid: "123", Cid: "456", Title: "P1"}
+	workCfg := &WorkConfig{SavePathFormat: "test", Config: config.NewConfig()}
+
+	extractTracks := func(ctx context.Context, client httpclient.Client, cfg *config.Config, logger *slog.Logger, aidOri, aid, cid, epid string, opts parser.ExtractOptions) (*entity.ParsedResult, error) {
+		return &entity.ParsedResult{
+			ExtraPoints: []entity.ViewPoint{{Title: "Extra", Start: 10, End: 20}},
+		}, nil
+	}
+
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks}
+	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(p.Points) != 1 || p.Points[0].Title != "Extra" {
+		t.Errorf("expected points to be merged, got %+v", p.Points)
+	}
+}
+
+func TestDownloadPage_PointsNotOverwritten(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Chdir(tmpDir)
+
+	opt := cli.NewOption()
+	vInfo := &entity.VInfo{Title: "Test Video"}
+	p := &entity.Page{Index: 1, Aid: "123", Cid: "456", Title: "P1", Points: []entity.ViewPoint{{Title: "Existing", Start: 0, End: 5}}}
+	workCfg := &WorkConfig{SavePathFormat: "test", Config: config.NewConfig()}
+
+	extractTracks := func(ctx context.Context, client httpclient.Client, cfg *config.Config, logger *slog.Logger, aidOri, aid, cid, epid string, opts parser.ExtractOptions) (*entity.ParsedResult, error) {
+		return &entity.ParsedResult{
+			ExtraPoints: []entity.ViewPoint{{Title: "Extra", Start: 10, End: 20}},
+		}, nil
+	}
+
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks}
+	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(p.Points) != 1 || p.Points[0].Title != "Existing" {
+		t.Errorf("expected existing points to be preserved, got %+v", p.Points)
+	}
+}
+
+func TestDownloadPage_DebugJSON(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Chdir(tmpDir)
+
+	opt := cli.NewOption()
+	opt.Debug = true
+	vInfo := &entity.VInfo{Title: "Test Video"}
+	p := &entity.Page{Index: 1, Aid: "123", Cid: "456", Title: "P1"}
+	workCfg := &WorkConfig{SavePathFormat: "test", Config: config.NewConfig()}
+
+	extractTracks := func(ctx context.Context, client httpclient.Client, cfg *config.Config, logger *slog.Logger, aidOri, aid, cid, epid string, opts parser.ExtractOptions) (*entity.ParsedResult, error) {
+		return &entity.ParsedResult{WebJsonString: `{"debug":true}`}, nil
+	}
+
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks}
+	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	debugPath := filepath.Join(tmpDir, "123", "123.debug.json")
+	data, err := os.ReadFile(debugPath)
+	if err != nil {
+		t.Fatalf("debug json not found: %v", err)
+	}
+	if string(data) != `{"debug":true}` {
+		t.Errorf("unexpected debug json: %s", string(data))
+	}
+}
+
+func TestDownloadPage_DASHAudioOnly(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Chdir(tmpDir)
+
+	opt := cli.NewOption()
+	opt.AudioOnly = true
+	vInfo := &entity.VInfo{Title: "Test Video"}
+	p := &entity.Page{Index: 1, Aid: "123", Cid: "456", Title: "P1"}
+	workCfg := &WorkConfig{SavePathFormat: "test", Config: config.NewConfig()}
+
+	var capturedResult *entity.ParsedResult
+	extractTracks := func(ctx context.Context, client httpclient.Client, cfg *config.Config, logger *slog.Logger, aidOri, aid, cid, epid string, opts parser.ExtractOptions) (*entity.ParsedResult, error) {
+		return &entity.ParsedResult{
+			VideoTracks: []entity.Video{{ID: "1", Dfn: "1080P"}},
+			AudioTracks: []entity.Audio{{ID: "1", Dfn: "320K"}},
+		}, nil
+	}
+
+	printCalled := false
+	origPrint := printStreamsImpl
+	printStreamsImpl = func(logger *slog.Logger, videos []entity.Video, audios []entity.Audio, bgAudios []entity.Audio, roleAudioList []entity.AudioMaterialInfo) {
+		printCalled = true
+		capturedResult = &entity.ParsedResult{VideoTracks: videos, AudioTracks: audios}
+	}
+	defer func() { printStreamsImpl = origPrint }()
+
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks}
+	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !printCalled {
+		t.Fatal("expected printStreams to be called")
+	}
+	if len(capturedResult.VideoTracks) != 0 {
+		t.Errorf("expected video tracks to be cleared, got %d", len(capturedResult.VideoTracks))
+	}
+	if len(capturedResult.AudioTracks) != 1 {
+		t.Errorf("expected 1 audio track, got %d", len(capturedResult.AudioTracks))
+	}
+}
+
+func TestDownloadPage_DASHVideoOnly(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Chdir(tmpDir)
+
+	opt := cli.NewOption()
+	opt.VideoOnly = true
+	vInfo := &entity.VInfo{Title: "Test Video"}
+	p := &entity.Page{Index: 1, Aid: "123", Cid: "456", Title: "P1"}
+	workCfg := &WorkConfig{SavePathFormat: "test", Config: config.NewConfig()}
+
+	var capturedResult *entity.ParsedResult
+	extractTracks := func(ctx context.Context, client httpclient.Client, cfg *config.Config, logger *slog.Logger, aidOri, aid, cid, epid string, opts parser.ExtractOptions) (*entity.ParsedResult, error) {
+		return &entity.ParsedResult{
+			VideoTracks:           []entity.Video{{ID: "1", Dfn: "1080P"}},
+			AudioTracks:           []entity.Audio{{ID: "1", Dfn: "320K"}},
+			BackgroundAudioTracks: []entity.Audio{{ID: "2", Dfn: "64K"}},
+			RoleAudioList:         []entity.AudioMaterialInfo{{Title: "Role1"}},
+		}, nil
+	}
+
+	printCalled := false
+	origPrint := printStreamsImpl
+	printStreamsImpl = func(logger *slog.Logger, videos []entity.Video, audios []entity.Audio, bgAudios []entity.Audio, roleAudioList []entity.AudioMaterialInfo) {
+		printCalled = true
+		capturedResult = &entity.ParsedResult{
+			VideoTracks:           videos,
+			AudioTracks:           audios,
+			BackgroundAudioTracks: bgAudios,
+			RoleAudioList:         roleAudioList,
+		}
+	}
+	defer func() { printStreamsImpl = origPrint }()
+
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks}
+	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !printCalled {
+		t.Fatal("expected printStreams to be called")
+	}
+	if len(capturedResult.VideoTracks) != 1 {
+		t.Errorf("expected 1 video track, got %d", len(capturedResult.VideoTracks))
+	}
+	if len(capturedResult.AudioTracks) != 0 {
+		t.Errorf("expected audio tracks to be cleared, got %d", len(capturedResult.AudioTracks))
+	}
+	if len(capturedResult.BackgroundAudioTracks) != 0 {
+		t.Errorf("expected background audio tracks to be cleared, got %d", len(capturedResult.BackgroundAudioTracks))
+	}
+	if len(capturedResult.RoleAudioList) != 0 {
+		t.Errorf("expected role audio list to be cleared, got %d", len(capturedResult.RoleAudioList))
+	}
+}
+
+func TestDownloadPage_DASHInteractiveSelection(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Chdir(tmpDir)
+
+	opt := cli.NewOption()
+	opt.Interactive = true
+	vInfo := &entity.VInfo{Title: "Test Video"}
+	p := &entity.Page{Index: 1, Aid: "123", Cid: "456", Title: "P1"}
+	workCfg := &WorkConfig{SavePathFormat: "test", Config: config.NewConfig()}
+
+	extractTracks := func(ctx context.Context, client httpclient.Client, cfg *config.Config, logger *slog.Logger, aidOri, aid, cid, epid string, opts parser.ExtractOptions) (*entity.ParsedResult, error) {
+		return &entity.ParsedResult{
+			VideoTracks: []entity.Video{{ID: "1", Dfn: "1080P"}, {ID: "2", Dfn: "720P"}},
+			AudioTracks: []entity.Audio{{ID: "1", Dfn: "320K"}, {ID: "2", Dfn: "64K"}},
+		}, nil
+	}
+
+	selectCalls := 0
+	selectInteractive := func(prompt string, max int) (int, error) {
+		selectCalls++
+		if strings.Contains(prompt, "video") {
+			return 1, nil
+		}
+		return 0, nil
+	}
+
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks, SelectTrackInteractive: selectInteractive}
+	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if selectCalls != 2 {
+		t.Errorf("expected 2 select calls, got %d", selectCalls)
+	}
+}
+
+func TestDownloadPage_DASHOnlyShowInfoAfterExtract(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Chdir(tmpDir)
+
+	opt := cli.NewOption()
+	opt.OnlyShowInfo = true
+	vInfo := &entity.VInfo{Title: "Test Video"}
+	p := &entity.Page{Index: 1, Aid: "123", Cid: "456", Title: "P1"}
+	workCfg := &WorkConfig{SavePathFormat: "test", Config: config.NewConfig()}
+
+	extractTracks := func(ctx context.Context, client httpclient.Client, cfg *config.Config, logger *slog.Logger, aidOri, aid, cid, epid string, opts parser.ExtractOptions) (*entity.ParsedResult, error) {
+		return &entity.ParsedResult{
+			VideoTracks: []entity.Video{{ID: "1", Dfn: "1080P"}},
+			AudioTracks: []entity.Audio{{ID: "1", Dfn: "320K"}},
+		}, nil
+	}
+
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks}
+	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	// Should return nil after extracting and printing tracks
+}
+
+func TestDownloadPage_FLVBasic(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Chdir(tmpDir)
+
+	opt := cli.NewOption()
+	vInfo := &entity.VInfo{Title: "Test Video"}
+	p := &entity.Page{Index: 1, Aid: "123", Cid: "456", Title: "P1"}
+	workCfg := &WorkConfig{SavePathFormat: "test", Config: config.NewConfig()}
+
+	extractTracks := func(ctx context.Context, client httpclient.Client, cfg *config.Config, logger *slog.Logger, aidOri, aid, cid, epid string, opts parser.ExtractOptions) (*entity.ParsedResult, error) {
+		return &entity.ParsedResult{
+			Clips: []string{"http://example.com/clip1.flv"},
+			Dfns:  []string{"80"},
+			VideoTracks: []entity.Video{{ID: "80", Dfn: "1080P"}},
+		}, nil
+	}
+
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks}
+	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func TestDownloadPage_NoTracksLogsError(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Chdir(tmpDir)
+
+	opt := cli.NewOption()
+	vInfo := &entity.VInfo{Title: "Test Video"}
+	p := &entity.Page{Index: 1, Aid: "123", Cid: "456", Title: "P1"}
+	workCfg := &WorkConfig{SavePathFormat: "test", Config: config.NewConfig()}
+
+	extractTracks := func(ctx context.Context, client httpclient.Client, cfg *config.Config, logger *slog.Logger, aidOri, aid, cid, epid string, opts parser.ExtractOptions) (*entity.ParsedResult, error) {
+		return &entity.ParsedResult{}, nil
+	}
+
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks}
+	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+}
+
+func TestDownloadPage_DASHSortTracks(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Chdir(tmpDir)
+
+	opt := cli.NewOption()
+	vInfo := &entity.VInfo{Title: "Test Video"}
+	p := &entity.Page{Index: 1, Aid: "123", Cid: "456", Title: "P1"}
+	workCfg := &WorkConfig{
+		SavePathFormat:   "test",
+		Config:           config.NewConfig(),
+		DfnPriority:      map[string]int{"1080P": 0, "720P": 1},
+		EncodingPriority: map[string]byte{"AVC": 0, "HEVC": 1},
+	}
+
+	extractTracks := func(ctx context.Context, client httpclient.Client, cfg *config.Config, logger *slog.Logger, aidOri, aid, cid, epid string, opts parser.ExtractOptions) (*entity.ParsedResult, error) {
+		return &entity.ParsedResult{
+			VideoTracks: []entity.Video{
+				{ID: "1", Dfn: "720P", Codecs: "HEVC", Bandwith: 2000},
+				{ID: "2", Dfn: "1080P", Codecs: "AVC", Bandwith: 4000},
+			},
+			AudioTracks: []entity.Audio{
+				{ID: "1", Dfn: "64K", Codecs: "M4A", Bandwith: 64},
+				{ID: "2", Dfn: "320K", Codecs: "M4A", Bandwith: 320},
+			},
+		}, nil
+	}
+
+	var capturedVideos []entity.Video
+	var capturedAudios []entity.Audio
+	origPrint := printStreamsImpl
+	printStreamsImpl = func(logger *slog.Logger, videos []entity.Video, audios []entity.Audio, bgAudios []entity.Audio, roleAudioList []entity.AudioMaterialInfo) {
+		capturedVideos = videos
+		capturedAudios = audios
+	}
+	defer func() { printStreamsImpl = origPrint }()
+
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks}
+	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(capturedVideos) != 2 {
+		t.Fatalf("expected 2 video tracks, got %d", len(capturedVideos))
+	}
+	if capturedVideos[0].Dfn != "1080P" {
+		t.Errorf("expected first video to be 1080P, got %s", capturedVideos[0].Dfn)
+	}
+	if len(capturedAudios) != 2 {
+		t.Fatalf("expected 2 audio tracks, got %d", len(capturedAudios))
+	}
+	if capturedAudios[0].Bandwith != 320 {
+		t.Errorf("expected first audio to have highest bandwidth, got %d", capturedAudios[0].Bandwith)
+	}
+}
+
+func TestDownloadPage_DASHHideStreams(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Chdir(tmpDir)
+
+	opt := cli.NewOption()
+	opt.HideStreams = true
+	vInfo := &entity.VInfo{Title: "Test Video"}
+	p := &entity.Page{Index: 1, Aid: "123", Cid: "456", Title: "P1"}
+	workCfg := &WorkConfig{SavePathFormat: "test", Config: config.NewConfig()}
+
+	extractTracks := func(ctx context.Context, client httpclient.Client, cfg *config.Config, logger *slog.Logger, aidOri, aid, cid, epid string, opts parser.ExtractOptions) (*entity.ParsedResult, error) {
+		return &entity.ParsedResult{
+			VideoTracks: []entity.Video{{ID: "1", Dfn: "1080P"}},
+			AudioTracks: []entity.Audio{{ID: "1", Dfn: "320K"}},
+		}, nil
+	}
+
+	printCalled := false
+	origPrint := printStreamsImpl
+	printStreamsImpl = func(logger *slog.Logger, videos []entity.Video, audios []entity.Audio, bgAudios []entity.Audio, roleAudioList []entity.AudioMaterialInfo) {
+		printCalled = true
+	}
+	defer func() { printStreamsImpl = origPrint }()
+
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks}
+	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if printCalled {
+		t.Error("expected printStreams to be skipped when HideStreams is true")
+	}
+}
+
 func TestFilterAiSubtitles(t *testing.T) {
 	subs := []entity.Subtitle{
 		{Lan: "zh-CN", Url: "http://example.com/1"},
@@ -336,3 +739,5 @@ func TestFilterAiSubtitles(t *testing.T) {
 		}
 	}
 }
+
+
