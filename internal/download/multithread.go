@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/nilaonai/bbdown-go/internal/config"
@@ -16,6 +17,20 @@ import (
 )
 
 const chunkSize = 20 * 1024 * 1024 // 20MB
+
+// downloadSem limits the total number of concurrent chunk download goroutines
+// across all MultiThreadDownloader instances to avoid triggering Bilibili
+// rate limiting. Capacity defaults to 5 and can be overridden via the
+// BBDOWN_MAX_CONCURRENT environment variable.
+var downloadSem = func() chan struct{} {
+	cap := 5
+	if v := os.Getenv("BBDOWN_MAX_CONCURRENT"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n > 0 {
+			cap = n
+		}
+	}
+	return make(chan struct{}, cap)
+}()
 
 // MultiThreadDownloader performs multi-threaded HTTP downloads using range requests.
 type MultiThreadDownloader struct {
@@ -64,11 +79,13 @@ func (d *MultiThreadDownloader) DownloadMultiThread(ctx context.Context, url, pa
 	dir := filepath.Dir(path)
 
 	var g errgroup.Group
-	g.SetLimit(8)
 
 	for i := 0; i < numChunks; i++ {
 		i := i
 		g.Go(func() error {
+			downloadSem <- struct{}{}
+			defer func() { <-downloadSem }()
+
 			start := int64(i) * chunkSize
 			end := start + chunkSize - 1
 			if end >= totalSize {

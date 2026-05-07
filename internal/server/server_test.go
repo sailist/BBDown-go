@@ -326,3 +326,32 @@ func TestCORS(t *testing.T) {
 		t.Errorf("expected CORS headers *, got %s", h)
 	}
 }
+
+func TestPprofRoutes_Enabled(t *testing.T) {
+	t.Setenv("BBDOWN_PPROF", "1")
+	s := NewServer(config.NewConfig())
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/debug/pprof/", nil)
+	s.engine.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected status 200 for /debug/pprof/, got %d", w.Code)
+	}
+	if !strings.Contains(w.Body.String(), "goroutine") {
+		t.Errorf("expected pprof index to contain 'goroutine', got %s", w.Body.String())
+	}
+}
+
+func TestPprofRoutes_Disabled(t *testing.T) {
+	t.Setenv("BBDOWN_PPROF", "")
+	s := NewServer(config.NewConfig())
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/debug/pprof/", nil)
+	s.engine.ServeHTTP(w, req)
+
+	if w.Code != http.StatusNotFound {
+		t.Fatalf("expected status 404 when pprof disabled, got %d", w.Code)
+	}
+}

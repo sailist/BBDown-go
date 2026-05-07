@@ -4,6 +4,8 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"net/http"
+	"net/http/pprof"
+	"os"
 	"sync"
 	"time"
 
@@ -65,6 +67,16 @@ func (s *Server) setupRoutes() {
 	remove.GET("/", s.removeAllFinished)
 	remove.GET("/failed", s.removeFailedFinished)
 	remove.GET("/:id", s.removeFinishedByID)
+
+	// Register pprof debug endpoints when BBDOWN_PPROF=1.
+	if os.Getenv("BBDOWN_PPROF") == "1" {
+		s.engine.GET("/debug/pprof/", gin.WrapF(pprof.Index))
+		s.engine.GET("/debug/pprof/cmdline", gin.WrapF(pprof.Cmdline))
+		s.engine.GET("/debug/pprof/profile", gin.WrapF(pprof.Profile))
+		s.engine.GET("/debug/pprof/symbol", gin.WrapF(pprof.Symbol))
+		s.engine.GET("/debug/pprof/trace", gin.WrapF(pprof.Trace))
+		s.engine.GET("/debug/pprof/:name", gin.WrapH(pprof.Handler("")))
+	}
 }
 
 // Run starts the HTTP server on the given address.

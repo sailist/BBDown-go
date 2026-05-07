@@ -46,9 +46,22 @@ func NewStandardClient(logger *slog.Logger) *StandardClient {
 	seed := time.Now().UnixNano() + atomic.AddInt64(&seedCounter, 1)
 	rnd := rand.New(rand.NewSource(seed))
 
+	// Transport tuning values are chosen to balance connection reuse and
+	// resource usage for a typical video downloader workload:
+	//   - MaxIdleConns (100): high enough to keep idle sockets warm across many
+	//     concurrent Bilibili API and CDN hosts.
+	//   - MaxIdleConnsPerHost (10): prevents any single CDN endpoint from
+	//     monopolising the pool while still allowing effective keep-alive reuse.
+	//   - IdleConnTimeout (90s): matches Go's default; keeps connections ready
+	//     for the next chunk request without holding them indefinitely.
+	//   - TLSHandshakeTimeout (10s): aborts slow or hung TLS handshakes early.
+	//   - ExpectContinueTimeout (1s): reduces latency for small API requests.
 	tr := &http.Transport{
-		MaxIdleConns:    100,
-		IdleConnTimeout: 90 * time.Second,
+		MaxIdleConns:          100,
+		MaxIdleConnsPerHost:   10,
+		IdleConnTimeout:       90 * time.Second,
+		TLSHandshakeTimeout:   10 * time.Second,
+		ExpectContinueTimeout: 1 * time.Second,
 		TLSClientConfig: &tls.Config{
 			InsecureSkipVerify: true,
 		},

@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -215,5 +216,35 @@ func TestEpSsCookie(t *testing.T) {
 	}
 	if !strings.Contains(receivedCookie, "CURRENT_FNVAL=4048") {
 		t.Fatalf("expected CURRENT_FNVAL=4048 in cookie, got %q", receivedCookie)
+	}
+}
+
+func TestTransportConfiguration(t *testing.T) {
+	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
+	client := NewStandardClient(logger)
+
+	transport, ok := client.client.Transport.(*http.Transport)
+	if !ok {
+		t.Fatalf("expected *http.Transport, got %T", client.client.Transport)
+	}
+
+	tests := []struct {
+		name     string
+		got      interface{}
+		expected interface{}
+	}{
+		{"MaxIdleConns", transport.MaxIdleConns, 100},
+		{"MaxIdleConnsPerHost", transport.MaxIdleConnsPerHost, 10},
+		{"IdleConnTimeout", transport.IdleConnTimeout, 90 * time.Second},
+		{"TLSHandshakeTimeout", transport.TLSHandshakeTimeout, 10 * time.Second},
+		{"ExpectContinueTimeout", transport.ExpectContinueTimeout, 1 * time.Second},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if !reflect.DeepEqual(tt.got, tt.expected) {
+				t.Errorf("expected %v, got %v", tt.expected, tt.got)
+			}
+		})
 	}
 }
