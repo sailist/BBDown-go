@@ -118,5 +118,5 @@ func formatTimestamp(ts int64, format string) string {
 	if ts == 0 {
 		return "null"
 	}
-	return time.Unix(ts, 0).Format(format)
+	return time.Unix(ts, 0).UTC().Format(format)
 }

@@ -106,11 +106,11 @@ func (s *Server) getTasks(c *gin.Context) {
 	s.mu.RLock()
 	running := make([]*DownloadTask, 0, len(s.runningTasks))
 	for _, t := range s.runningTasks {
-		running = append(running, t)
+		running = append(running, cloneTask(t))
 	}
 	finished := make([]*DownloadTask, 0, len(s.finishedTasks))
 	for _, t := range s.finishedTasks {
-		finished = append(finished, t)
+		finished = append(finished, cloneTask(t))
 	}
 	s.mu.RUnlock()
 
@@ -121,7 +121,7 @@ func (s *Server) getRunningTasks(c *gin.Context) {
 	s.mu.RLock()
 	tasks := make([]*DownloadTask, 0, len(s.runningTasks))
 	for _, t := range s.runningTasks {
-		tasks = append(tasks, t)
+		tasks = append(tasks, cloneTask(t))
 	}
 	s.mu.RUnlock()
 	c.JSON(http.StatusOK, tasks)
@@ -131,7 +131,7 @@ func (s *Server) getFinishedTasks(c *gin.Context) {
 	s.mu.RLock()
 	tasks := make([]*DownloadTask, 0, len(s.finishedTasks))
 	for _, t := range s.finishedTasks {
-		tasks = append(tasks, t)
+		tasks = append(tasks, cloneTask(t))
 	}
 	s.mu.RUnlock()
 	c.JSON(http.StatusOK, tasks)
@@ -144,13 +144,34 @@ func (s *Server) getTaskByID(c *gin.Context) {
 	if !ok {
 		task, ok = s.finishedTasks[id]
 	}
+	var t *DownloadTask
+	if ok {
+		t = cloneTask(task)
+	}
 	s.mu.RUnlock()
 
 	if !ok {
 		c.JSON(http.StatusNotFound, gin.H{"error": "task not found"})
 		return
 	}
-	c.JSON(http.StatusOK, task)
+	c.JSON(http.StatusOK, t)
+}
+
+func cloneTask(src *DownloadTask) *DownloadTask {
+	return &DownloadTask{
+		Aid:                  src.Aid,
+		URL:                  src.URL,
+		Title:                src.Title,
+		Pic:                  src.Pic,
+		VideoPubTime:         src.VideoPubTime,
+		TaskCreateTime:       src.TaskCreateTime,
+		TaskFinishTime:       src.TaskFinishTime,
+		Progress:             src.Progress,
+		DownloadSpeed:        src.DownloadSpeed,
+		TotalDownloadedBytes: src.TotalDownloadedBytes,
+		IsSuccessful:         src.IsSuccessful,
+		SavePaths:            append([]string(nil), src.SavePaths...),
+	}
 }
 
 type addTaskRequest struct {

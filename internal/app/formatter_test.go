@@ -46,7 +46,7 @@ func TestFormatSavePath_PublishDate(t *testing.T) {
 	format := "<videoTitle>_<publishDate>"
 	result := FormatSavePath(format, "Test", video, nil, page, 1, "web", 1609459200)
 
-	expected := "Test_2021-01-01_08-00-00.mp4"
+	expected := "Test_2021-01-01_00-00-00.mp4"
 	if result != expected {
 		t.Fatalf("expected %q, got %q", expected, result)
 	}
@@ -59,7 +59,7 @@ func TestFormatSavePath_VideoDate(t *testing.T) {
 	format := "<videoTitle>_<videoDate>"
 	result := FormatSavePath(format, "Test", video, nil, page, 1, "web", 0)
 
-	expected := "Test_2021-01-01_08-00-00.mp4"
+	expected := "Test_2021-01-01_00-00-00.mp4"
 	if result != expected {
 		t.Fatalf("expected %q, got %q", expected, result)
 	}

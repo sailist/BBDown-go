@@ -462,6 +462,10 @@ func TestFFmpegMuxer_MergeFLV_MultipleFiles(t *testing.T) {
 	}
 	defer func() { execCommandContext = origExec }()
 
+	origFind := FindExecutable
+	FindExecutable = func(name string) (string, error) { return "ffmpeg", nil }
+	defer func() { FindExecutable = origFind }()
+
 	m := NewFFmpegMuxer(discardLogger())
 	err := m.MergeFLV(context.Background(), []string{flv1, flv2}, outPath)
 	if err != nil {

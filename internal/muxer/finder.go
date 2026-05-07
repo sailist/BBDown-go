@@ -14,7 +14,9 @@ import (
 // 1. Current working directory
 // 2. Directory containing the current executable
 // 3. Directories listed in the PATH environment variable
-func FindExecutable(name string) (string, error) {
+var FindExecutable = findExecutable
+
+func findExecutable(name string) (string, error) {
 	fileExt := ""
 	if runtime.GOOS == "windows" {
 		fileExt = ".exe"
