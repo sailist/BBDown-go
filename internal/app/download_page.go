@@ -31,6 +31,7 @@ type DownloadDeps struct {
 	Muxer                  muxer.Muxer
 	ExtractTracks          func(ctx context.Context, client httpclient.Client, cfg *config.Config, logger *slog.Logger, aidOri, aid, cid, epid string, opts parser.ExtractOptions) (*entity.ParsedResult, error)
 	SelectTrackInteractive func(prompt string, max int) (int, error)
+	DownloadPage           func(ctx context.Context, p *entity.Page, opt *cli.Option, vInfo *entity.VInfo, selectedPages []entity.Page, workCfg *WorkConfig, deps DownloadDeps) error
 }
 
 // selectTrackInteractive reads user input from stdin to select a track index.
