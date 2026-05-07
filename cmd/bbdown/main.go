@@ -127,6 +127,17 @@ func doWork(ctx context.Context, opt *cli.Option) error {
 	// Set AidOri for downstream use
 	workCfg.AidOri = aidOri
 
+	// Auto-detect aria2c if user didn't explicitly set --use-aria2c
+	if !opt.UseAria2cChanged {
+		if download.IsAria2cAvailable() {
+			opt.UseAria2c = true
+			logger.Info("aria2c found, using aria2c for download")
+		} else {
+			opt.UseAria2c = false
+			logger.Info("aria2c not found, falling back to built-in downloader; install aria2c for faster multi-connection downloads")
+		}
+	}
+
 	// Set up downloader: try multi-thread first, fallback to single
 	var dl download.Downloader
 	if opt.MultiThread {
@@ -149,6 +160,7 @@ func doWork(ctx context.Context, opt *cli.Option) error {
 		Logger:        logger,
 		Downloader:    dl,
 		Muxer:         mx,
+		Config:        workCfg.Config,
 		ExtractTracks: parser.ExtractTracks,
 	}
 

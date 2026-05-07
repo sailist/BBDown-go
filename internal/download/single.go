@@ -30,7 +30,15 @@ func NewSingleDownloader(client httpclient.Client, cfg *config.Config, logger *s
 
 // Download downloads a file using a single connection with resume support.
 func (d *SingleDownloader) Download(ctx context.Context, url, path string, opts Options) error {
-	return d.downloadWithProgress(ctx, url, path, opts, nil)
+	var progress func(downloaded, total int64)
+	if opts.ShowProgress {
+		totalSize, err := d.client.GetContentLength(ctx, url)
+		if err == nil && totalSize > 0 {
+			reporter := NewConsoleReporter(totalSize)
+			progress = reporter.Report
+		}
+	}
+	return d.downloadWithProgress(ctx, url, path, opts, progress)
 }
 
 // DownloadMultiThread is not supported by SingleDownloader.

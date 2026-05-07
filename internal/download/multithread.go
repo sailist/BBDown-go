@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync/atomic"
 
 	"github.com/nilaonai/bbdown-go/internal/config"
 	"github.com/nilaonai/bbdown-go/pkg/httpclient"
@@ -78,6 +79,12 @@ func (d *MultiThreadDownloader) DownloadMultiThread(ctx context.Context, url, pa
 
 	dir := filepath.Dir(path)
 
+	var reporter Reporter
+	if opts.ShowProgress {
+		reporter = NewConsoleReporter(totalSize)
+	}
+	var totalDownloaded atomic.Int64
+
 	var g errgroup.Group
 
 	for i := 0; i < numChunks; i++ {
@@ -99,7 +106,7 @@ func (d *MultiThreadDownloader) DownloadMultiThread(ctx context.Context, url, pa
 			tmpName := fmt.Sprintf("%05d_%s%s", i, name, tmpExt)
 			tmpPath := filepath.Join(dir, tmpName)
 
-			return d.downloadChunk(ctx, url, tmpPath, start, end)
+			return d.downloadChunk(ctx, url, tmpPath, start, end, reporter, &totalDownloaded, totalSize)
 		})
 	}
 
@@ -155,12 +162,16 @@ func (d *MultiThreadDownloader) DownloadMultiThread(ctx context.Context, url, pa
 	return nil
 }
 
-func (d *MultiThreadDownloader) downloadChunk(ctx context.Context, url, path string, start, end int64) error {
+func (d *MultiThreadDownloader) downloadChunk(ctx context.Context, url, path string, start, end int64, reporter Reporter, totalDownloaded *atomic.Int64, totalSize int64) error {
 	// Check if chunk already exists and is complete.
 	fi, err := os.Stat(path)
 	if err == nil {
 		expectedSize := end - start + 1
 		if fi.Size() == expectedSize {
+			if reporter != nil {
+				current := totalDownloaded.Add(expectedSize)
+				reporter.Report(current, totalSize)
+			}
 			return nil
 		}
 	}
@@ -184,9 +195,24 @@ func (d *MultiThreadDownloader) downloadChunk(ctx context.Context, url, path str
 	}
 	defer f.Close()
 
-	_, err = io.Copy(f, resp.Body)
-	if err != nil {
-		return fmt.Errorf("write chunk: %w", err)
+	buf := make([]byte, 32*1024)
+	for {
+		n, err := resp.Body.Read(buf)
+		if n > 0 {
+			if _, werr := f.Write(buf[:n]); werr != nil {
+				return fmt.Errorf("write chunk: %w", werr)
+			}
+			if reporter != nil {
+				current := totalDownloaded.Add(int64(n))
+				reporter.Report(current, totalSize)
+			}
+		}
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return fmt.Errorf("read chunk: %w", err)
+		}
 	}
 
 	return nil

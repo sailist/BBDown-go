@@ -12,10 +12,11 @@ type Downloader interface {
 
 // Options controls download behavior.
 type Options struct {
-	UseAria2c   bool
-	Aria2cArgs  string
-	ForceHTTP   bool
-	MultiThread bool
+	UseAria2c    bool
+	Aria2cArgs   string
+	ForceHTTP    bool
+	MultiThread  bool
+	ShowProgress bool
 }
 
 // Ensure implementations satisfy the interface.

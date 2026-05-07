@@ -29,6 +29,7 @@ type Option struct {
 	Interactive             bool
 	ShowAll                 bool
 	UseAria2c               bool
+	UseAria2cChanged        bool
 	Aria2cArgs              string
 	MultiThread             bool
 	SelectPage              string
@@ -109,6 +110,7 @@ func NewRootCommand(opt *Option) *cobra.Command {
 			if len(args) > 0 {
 				opt.URL = args[0]
 			}
+			opt.UseAria2cChanged = cmd.Flags().Changed("use-aria2c")
 			return RunRoot(cmd.Context(), opt)
 		},
 	}
@@ -130,7 +132,7 @@ func NewRootCommand(opt *Option) *cobra.Command {
 	cmd.Flags().BoolVar(&opt.ShowAll, "show-all", false, "show all pages")
 
 	// Download engine.
-	cmd.Flags().BoolVar(&opt.UseAria2c, "use-aria2c", false, "use aria2c for downloading")
+	cmd.Flags().BoolVar(&opt.UseAria2c, "use-aria2c", false, "use aria2c for downloading (default: auto-detect)")
 	cmd.Flags().StringVar(&opt.Aria2cArgs, "aria2c-args", "", "extra arguments passed to aria2c")
 	cmd.Flags().BoolVar(&opt.MultiThread, "multi-thread", true, "enable multi-threaded download")
 

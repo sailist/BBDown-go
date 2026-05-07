@@ -29,6 +29,7 @@ type DownloadDeps struct {
 	Logger                 *slog.Logger
 	Downloader             download.Downloader
 	Muxer                  muxer.Muxer
+	Config                 *config.Config
 	ExtractTracks          func(ctx context.Context, client httpclient.Client, cfg *config.Config, logger *slog.Logger, aidOri, aid, cid, epid string, opts parser.ExtractOptions) (*entity.ParsedResult, error)
 	SelectTrackInteractive func(prompt string, max int) (int, error)
 	DownloadPage           func(ctx context.Context, p *entity.Page, opt *cli.Option, vInfo *entity.VInfo, selectedPages []entity.Page, workCfg *WorkConfig, deps DownloadDeps) error
@@ -584,11 +585,23 @@ func defaultPrintStreams(logger *slog.Logger, videos []entity.Video, audios []en
 }
 
 func downloadTrack(ctx context.Context, deps DownloadDeps, url, path string, opt *cli.Option) error {
+	if opt.UseAria2c {
+		if !download.IsAria2cAvailable() {
+			return fmt.Errorf("aria2c requested but not found in PATH, current directory, or program directory")
+		}
+		cfg := deps.Config
+		if cfg == nil {
+			cfg = config.NewConfig()
+		}
+		return download.DownloadWithAria2c(ctx, url, path, opt.Aria2cArgs, cfg)
+	}
+
 	dlOpts := download.Options{
-		UseAria2c:   opt.UseAria2c,
-		Aria2cArgs:  opt.Aria2cArgs,
-		ForceHTTP:   opt.ForceHttp,
-		MultiThread: opt.MultiThread,
+		UseAria2c:    false,
+		Aria2cArgs:   opt.Aria2cArgs,
+		ForceHTTP:    opt.ForceHttp,
+		MultiThread:  opt.MultiThread,
+		ShowProgress: true,
 	}
 	if opt.MultiThread {
 		return deps.Downloader.DownloadMultiThread(ctx, url, path, dlOpts)

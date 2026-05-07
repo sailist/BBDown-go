@@ -314,6 +314,7 @@ func TestDownloadWorkflow_DASH(t *testing.T) {
 		Logger:        logger,
 		Downloader:    mockDL,
 		Muxer:         mockMX,
+		Config:        workCfg.Config,
 		ExtractTracks: parser.ExtractTracks,
 	}
 

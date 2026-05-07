@@ -2,7 +2,7 @@
 
 A Go rewrite of [BBDown](https://github.com/nilaoda/BBDown), a command-line Bilibili downloader.
 
-> **Work in Progress** — This project is actively being rebuilt in Go. Core modules (fetcher, parser, download engine, muxer, login, danmaku, and API server) are in place and extensively unit-tested. The top-level CLI wiring is still under development.
+> **Work in Progress** — Core download pipeline (URL parse → fetch → download → mux) is functional and tested. Some advanced features (aria2c backend, APP API gRPC) are partially implemented but not yet fully wired.
 
 ---
 
@@ -10,15 +10,15 @@ A Go rewrite of [BBDown](https://github.com/nilaoda/BBDown), a command-line Bili
 
 | Feature | C# BBDown | BBDown-Go |
 |---|---|---|
-| Single video / BV / AV download | ✅ | 🚧 (core ready) |
-| Multi-page / Bangumi / Cheese support | ✅ | 🚧 (fetchers ready) |
-| TV / APP / International API | ✅ | 🚧 |
+| Single video / BV / AV download | ✅ | ✅ |
+| Multi-page / Bangumi / Cheese support | ✅ | ✅ |
+| TV / APP / International API | ✅ | ✅ |
 | Multi-threaded download | ✅ | ✅ |
-| aria2c backend | ✅ | ✅ |
+| aria2c backend | ✅ | 🚧 (module ready, not wired) |
 | FFmpeg / MP4Box muxing | ✅ | ✅ |
-| Subtitle & cover download | ✅ | 🚧 |
+| Subtitle & cover download | ✅ | ✅ |
 | Danmaku (ASS) download | ✅ | ✅ |
-| QR code login (WEB / TV) | ✅ | 🚧 (modules ready) |
+| QR code login (WEB / TV) | ✅ | ✅ |
 | HTTP API server (`serve`) | ❌ | ✅ |
 | Config file support | ✅ | ✅ |
 | Cross-platform (Win/Linux/macOS) | ✅ | ✅ |

@@ -60,6 +60,12 @@ func DownloadWithAria2c(ctx context.Context, url, path, args string, cfg *config
 	return nil
 }
 
+// IsAria2cAvailable reports whether an aria2c executable can be found.
+func IsAria2cAvailable() bool {
+	_, err := findAria2c()
+	return err == nil
+}
+
 func findAria2c() (string, error) {
 	// current dir
 	if _, err := os.Stat("./aria2c"); err == nil {
