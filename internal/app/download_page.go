@@ -17,6 +17,7 @@ import (
 	"github.com/nilaonai/bbdown-go/internal/core/entity"
 	"github.com/nilaonai/bbdown-go/internal/core/parser"
 	"github.com/nilaonai/bbdown-go/internal/core/util"
+	"github.com/nilaonai/bbdown-go/internal/danmaku"
 	"github.com/nilaonai/bbdown-go/internal/download"
 	"github.com/nilaonai/bbdown-go/internal/muxer"
 	"github.com/nilaonai/bbdown-go/pkg/httpclient"
@@ -181,7 +182,32 @@ func DownloadPage(
 		return nil
 	}
 
-	// Part 2: stream selection and download
+	// Parts 2 & 3: stream selection, download, and mux with retry logic
+	var lastErr error
+	for retry := 0; retry < 3; retry++ {
+		if retry > 0 {
+			deps.Logger.Warn("retrying download page", "retry", retry)
+		}
+		lastErr = downloadPageBody(ctx, p, opt, vInfo, selectedPages, workCfg, deps, coverPath, title, pagesCount, apiType)
+		if lastErr == nil {
+			return nil
+		}
+	}
+	return fmt.Errorf("download page failed after 3 retries: %w", lastErr)
+}
+
+func downloadPageBody(
+	ctx context.Context,
+	p *entity.Page,
+	opt *cli.Option,
+	vInfo *entity.VInfo,
+	selectedPages []entity.Page,
+	workCfg *WorkConfig,
+	deps DownloadDeps,
+	coverPath, title string,
+	pagesCount int,
+	apiType string,
+) error {
 	extractTracks := deps.ExtractTracks
 	if extractTracks == nil {
 		extractTracks = parser.ExtractTracks
@@ -276,10 +302,149 @@ func DownloadPage(
 			selectedBackgroundAudio = &parsedResult.BackgroundAudioTracks[0]
 		}
 
-		// TODO: part 3 - download & mux
-		_ = selectedVideo
-		_ = selectedAudio
-		_ = selectedBackgroundAudio
+		// Download danmaku
+		if workCfg.DownloadDanmaku {
+			danmakuXMLPath := fmt.Sprintf("%s/%s.xml", p.Aid, p.Aid)
+			danmakuURL := fmt.Sprintf("https://comment.bilibili.com/%s.xml", p.Cid)
+			if err := downloadFile(ctx, deps.HTTPClient, danmakuURL, danmakuXMLPath); err != nil {
+				deps.Logger.Warn("download danmaku failed", "error", err)
+			} else {
+				items, err := danmaku.ParseXML(danmakuXMLPath)
+				if err != nil {
+					deps.Logger.Warn("parse danmaku failed", "error", err)
+				} else {
+					hasASS := false
+					hasXML := false
+					for _, f := range workCfg.DownloadDanmakuFormats {
+						if f == "ass" {
+							hasASS = true
+						}
+						if f == "xml" {
+							hasXML = true
+						}
+					}
+					if hasASS {
+						assPath := strings.TrimSuffix(danmakuXMLPath, filepath.Ext(danmakuXMLPath)) + ".ass"
+						if err := danmaku.SaveAsAss(items, assPath); err != nil {
+							deps.Logger.Warn("save danmaku ass failed", "error", err)
+						}
+					}
+					if !hasXML {
+						_ = os.Remove(danmakuXMLPath)
+					}
+				}
+			}
+		}
+
+		// Early return if DanmakuOnly
+		if opt.DanmakuOnly {
+			return nil
+		}
+
+		// Compute save path and check existence
+		savePath := FormatSavePath(workCfg.SavePathFormat, title, selectedVideo, selectedAudio, *p, pagesCount, apiType, vInfo.PubTime)
+		if _, err := os.Stat(savePath); err == nil {
+			deps.Logger.Info("file already exists, skipping download", "path", savePath)
+			return nil
+		}
+
+		// Download tracks
+		var videoPath, audioPath string
+		if selectedVideo != nil {
+			videoPath = fmt.Sprintf("%s/%s.m4v", p.Aid, p.Aid)
+			if err := downloadTrack(ctx, deps, selectedVideo.BaseUrl, videoPath, opt); err != nil {
+				return fmt.Errorf("download video: %w", err)
+			}
+		}
+		if selectedAudio != nil {
+			audioPath = fmt.Sprintf("%s/%s.m4a", p.Aid, p.Aid)
+			if err := downloadTrack(ctx, deps, selectedAudio.BaseUrl, audioPath, opt); err != nil {
+				return fmt.Errorf("download audio: %w", err)
+			}
+		}
+		if selectedBackgroundAudio != nil {
+			bgPath := fmt.Sprintf("%s/%s.bg.m4a", p.Aid, p.Aid)
+			if err := downloadTrack(ctx, deps, selectedBackgroundAudio.BaseUrl, bgPath, opt); err != nil {
+				return fmt.Errorf("download background audio: %w", err)
+			}
+		}
+
+		// Download role audios
+		var audioMaterials []entity.AudioMaterial
+		for _, role := range parsedResult.RoleAudioList {
+			if len(role.Audio) > 0 {
+				raPath := fmt.Sprintf("%s/%s.role.%s.m4a", p.Aid, p.Aid, role.PersonName)
+				if err := downloadTrack(ctx, deps, role.Audio[0].BaseUrl, raPath, opt); err != nil {
+					deps.Logger.Warn("download role audio failed", "role", role.PersonName, "error", err)
+					continue
+				}
+				audioMaterials = append(audioMaterials, entity.AudioMaterial{
+					Title:      role.Title,
+					PersonName: role.PersonName,
+					Path:       raPath,
+				})
+			}
+		}
+
+		// Early return if SkipMux
+		if opt.SkipMux {
+			return nil
+		}
+
+		// Mux
+		var subs []entity.Subtitle
+		if !opt.SkipSubtitle {
+			subs, _ = util.GetSubtitles(ctx, deps.HTTPClient, workCfg.Config, p.Aid, p.Cid, p.Epid, p.Index, opt.UseIntlApi)
+			if opt.SkipAi {
+				subs = filterAiSubtitles(subs)
+			}
+		}
+
+		muxCfg := muxer.MuxConfig{
+			BVid:          p.BVid(),
+			VideoPath:     videoPath,
+			AudioPath:     audioPath,
+			AudioMaterial: audioMaterials,
+			OutPath:       savePath,
+			Desc:          p.Desc,
+			Title:         title,
+			Author:        p.OwnerName,
+			EpisodeID:     p.Epid,
+			Pic:           coverPath,
+			Lang:          workCfg.Lang,
+			Subtitles:     subs,
+			AudioOnly:     opt.AudioOnly,
+			VideoOnly:     opt.VideoOnly,
+			SimplyMux:     opt.SimplyMux,
+			IsHevc:        selectedVideo != nil && strings.Contains(selectedVideo.Codecs, "hevc"),
+			Points:        p.Points,
+			PubTime:       vInfo.PubTime,
+		}
+		if err := deps.Muxer.Mux(ctx, muxCfg); err != nil {
+			return fmt.Errorf("mux failed: %w", err)
+		}
+
+		// Clean up temp files
+		if videoPath != "" {
+			_ = os.Remove(videoPath)
+		}
+		if audioPath != "" {
+			_ = os.Remove(audioPath)
+		}
+		for _, sub := range subs {
+			if sub.Path != "" {
+				_ = os.Remove(sub.Path)
+			}
+		}
+		for _, am := range audioMaterials {
+			if am.Path != "" {
+				_ = os.Remove(am.Path)
+			}
+		}
+		if coverPath != "" {
+			_ = os.Remove(coverPath)
+		}
+
 		return nil
 	}
 
@@ -304,7 +469,77 @@ func DownloadPage(
 			return nil
 		}
 
-		// TODO: part 3 - download clips & merge
+		// Compute save path and check existence
+		savePath := FormatSavePath(workCfg.SavePathFormat, title, nil, nil, *p, pagesCount, apiType, vInfo.PubTime)
+		if _, err := os.Stat(savePath); err == nil {
+			deps.Logger.Info("file already exists, skipping download", "path", savePath)
+			return nil
+		}
+
+		// Download each clip
+		var clipFiles []string
+		for i, clipURL := range parsedResult.Clips {
+			clipPath := fmt.Sprintf("%s/%s_clip%d.flv", p.Aid, p.Aid, i)
+			if err := downloadTrack(ctx, deps, clipURL, clipPath, opt); err != nil {
+				return fmt.Errorf("download clip %d: %w", i, err)
+			}
+			clipFiles = append(clipFiles, clipPath)
+		}
+
+		// Merge clips
+		mergedPath := fmt.Sprintf("%s/%s.merged.flv", p.Aid, p.Aid)
+		if err := deps.Muxer.MergeFLV(ctx, clipFiles, mergedPath); err != nil {
+			return fmt.Errorf("merge flv failed: %w", err)
+		}
+
+		// Early return if SkipMux
+		if opt.SkipMux {
+			return nil
+		}
+
+		// Mux
+		var subs []entity.Subtitle
+		if !opt.SkipSubtitle {
+			subs, _ = util.GetSubtitles(ctx, deps.HTTPClient, workCfg.Config, p.Aid, p.Cid, p.Epid, p.Index, opt.UseIntlApi)
+			if opt.SkipAi {
+				subs = filterAiSubtitles(subs)
+			}
+		}
+
+		muxCfg := muxer.MuxConfig{
+			BVid:      p.BVid(),
+			VideoPath: mergedPath,
+			OutPath:   savePath,
+			Desc:      p.Desc,
+			Title:     title,
+			Author:    p.OwnerName,
+			EpisodeID: p.Epid,
+			Pic:       coverPath,
+			Lang:      workCfg.Lang,
+			Subtitles: subs,
+			VideoOnly: true,
+			SimplyMux: opt.SimplyMux,
+			Points:    p.Points,
+			PubTime:   vInfo.PubTime,
+		}
+		if err := deps.Muxer.Mux(ctx, muxCfg); err != nil {
+			return fmt.Errorf("mux failed: %w", err)
+		}
+
+		// Clean up temp files
+		for _, cf := range clipFiles {
+			_ = os.Remove(cf)
+		}
+		_ = os.Remove(mergedPath)
+		for _, sub := range subs {
+			if sub.Path != "" {
+				_ = os.Remove(sub.Path)
+			}
+		}
+		if coverPath != "" {
+			_ = os.Remove(coverPath)
+		}
+
 		return nil
 	}
 
@@ -345,6 +580,41 @@ func defaultPrintStreams(logger *slog.Logger, videos []entity.Video, audios []en
 			logger.Info(fmt.Sprintf("  [%d] %s - %s", i, r.Title, r.PersonName))
 		}
 	}
+}
+
+func downloadTrack(ctx context.Context, deps DownloadDeps, url, path string, opt *cli.Option) error {
+	dlOpts := download.Options{
+		UseAria2c:   opt.UseAria2c,
+		Aria2cArgs:  opt.Aria2cArgs,
+		ForceHTTP:   opt.ForceHttp,
+		MultiThread: opt.MultiThread,
+	}
+	if opt.MultiThread {
+		return deps.Downloader.DownloadMultiThread(ctx, url, path, dlOpts)
+	}
+	return deps.Downloader.Download(ctx, url, path, dlOpts)
+}
+
+func downloadFile(ctx context.Context, client httpclient.Client, url, path string) error {
+	if _, err := os.Stat(path); err == nil {
+		return nil
+	}
+	resp, err := client.Get(ctx, url)
+	if err != nil {
+		return fmt.Errorf("download file request failed: %w", err)
+	}
+	defer resp.Body.Close()
+	data, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("read file response: %w", err)
+	}
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		return fmt.Errorf("create file dir: %w", err)
+	}
+	if err := os.WriteFile(path, data, 0o644); err != nil {
+		return fmt.Errorf("write file: %w", err)
+	}
+	return nil
 }
 
 // FetchPoints fetches viewpoint/chapter data from Bilibili API.

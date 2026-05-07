@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"errors"
 	"io"
 	"log/slog"
 	"net/http"
@@ -14,8 +15,48 @@ import (
 	"github.com/nilaonai/bbdown-go/internal/config"
 	"github.com/nilaonai/bbdown-go/internal/core/entity"
 	"github.com/nilaonai/bbdown-go/internal/core/parser"
+	"github.com/nilaonai/bbdown-go/internal/download"
+	"github.com/nilaonai/bbdown-go/internal/muxer"
 	"github.com/nilaonai/bbdown-go/pkg/httpclient"
 )
+
+type mockDownloader struct {
+	downloadFunc   func(ctx context.Context, url, path string, opts download.Options) error
+	downloadMTFunc func(ctx context.Context, url, path string, opts download.Options) error
+}
+
+func (m *mockDownloader) Download(ctx context.Context, url, path string, opts download.Options) error {
+	if m.downloadFunc != nil {
+		return m.downloadFunc(ctx, url, path, opts)
+	}
+	return nil
+}
+
+func (m *mockDownloader) DownloadMultiThread(ctx context.Context, url, path string, opts download.Options) error {
+	if m.downloadMTFunc != nil {
+		return m.downloadMTFunc(ctx, url, path, opts)
+	}
+	return nil
+}
+
+type mockMuxer struct {
+	muxFunc      func(ctx context.Context, cfg muxer.MuxConfig) error
+	mergeFLVFunc func(ctx context.Context, files []string, outPath string) error
+}
+
+func (m *mockMuxer) Mux(ctx context.Context, cfg muxer.MuxConfig) error {
+	if m.muxFunc != nil {
+		return m.muxFunc(ctx, cfg)
+	}
+	return nil
+}
+
+func (m *mockMuxer) MergeFLV(ctx context.Context, files []string, outPath string) error {
+	if m.mergeFLVFunc != nil {
+		return m.mergeFLVFunc(ctx, files, outPath)
+	}
+	return nil
+}
 
 func TestFetchPoints_Success(t *testing.T) {
 	body := `{"data":{"view_points":[{"content":"Intro","from":0,"to":60},{"content":"Main","from":60,"to":300}]}}`
@@ -456,7 +497,7 @@ func TestDownloadPage_DASHAudioOnly(t *testing.T) {
 	}
 	defer func() { printStreamsImpl = origPrint }()
 
-	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks}
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks, Downloader: &mockDownloader{}, Muxer: &mockMuxer{}}
 	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -505,7 +546,7 @@ func TestDownloadPage_DASHVideoOnly(t *testing.T) {
 	}
 	defer func() { printStreamsImpl = origPrint }()
 
-	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks}
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks, Downloader: &mockDownloader{}, Muxer: &mockMuxer{}}
 	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -553,7 +594,7 @@ func TestDownloadPage_DASHInteractiveSelection(t *testing.T) {
 		return 0, nil
 	}
 
-	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks, SelectTrackInteractive: selectInteractive}
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks, SelectTrackInteractive: selectInteractive, Downloader: &mockDownloader{}, Muxer: &mockMuxer{}}
 	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -605,7 +646,7 @@ func TestDownloadPage_FLVBasic(t *testing.T) {
 		}, nil
 	}
 
-	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks}
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks, Downloader: &mockDownloader{}, Muxer: &mockMuxer{}}
 	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -668,7 +709,7 @@ func TestDownloadPage_DASHSortTracks(t *testing.T) {
 	}
 	defer func() { printStreamsImpl = origPrint }()
 
-	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks}
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks, Downloader: &mockDownloader{}, Muxer: &mockMuxer{}}
 	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -711,7 +752,7 @@ func TestDownloadPage_DASHHideStreams(t *testing.T) {
 	}
 	defer func() { printStreamsImpl = origPrint }()
 
-	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks}
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks, Downloader: &mockDownloader{}, Muxer: &mockMuxer{}}
 	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -741,3 +782,437 @@ func TestFilterAiSubtitles(t *testing.T) {
 }
 
 
+
+// Part 3 tests
+
+func TestDownloadPage_DASHDownloadAndMux(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Chdir(tmpDir)
+
+	opt := cli.NewOption()
+	vInfo := &entity.VInfo{Title: "Test Video"}
+	p := &entity.Page{Index: 1, Aid: "123", Cid: "456", Title: "P1"}
+	workCfg := &WorkConfig{SavePathFormat: "test", Config: config.NewConfig()}
+
+	extractTracks := func(ctx context.Context, client httpclient.Client, cfg *config.Config, logger *slog.Logger, aidOri, aid, cid, epid string, opts parser.ExtractOptions) (*entity.ParsedResult, error) {
+		return &entity.ParsedResult{
+			VideoTracks: []entity.Video{{ID: "1", Dfn: "1080P", BaseUrl: "https://example.com/video.m4v"}},
+			AudioTracks: []entity.Audio{{ID: "1", Dfn: "320K", BaseUrl: "https://example.com/audio.m4a"}},
+		}, nil
+	}
+
+	var downloaded []string
+	downloader := &mockDownloader{
+		downloadMTFunc: func(ctx context.Context, url, path string, opts download.Options) error {
+			downloaded = append(downloaded, url)
+			return os.WriteFile(path, []byte("data"), 0o644)
+		},
+	}
+
+	var muxCfg *muxer.MuxConfig
+	muxerMock := &mockMuxer{
+		muxFunc: func(ctx context.Context, cfg muxer.MuxConfig) error {
+			muxCfg = &cfg
+			return nil
+		},
+	}
+
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks, Downloader: downloader, Muxer: muxerMock}
+	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(downloaded) != 2 {
+		t.Errorf("expected 2 downloads, got %d", len(downloaded))
+	}
+	if muxCfg == nil {
+		t.Fatal("expected mux to be called")
+	}
+	if muxCfg.VideoPath == "" {
+		t.Error("expected video path in mux config")
+	}
+	if muxCfg.AudioPath == "" {
+		t.Error("expected audio path in mux config")
+	}
+}
+
+func TestDownloadPage_DASHSkipMux(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Chdir(tmpDir)
+
+	opt := cli.NewOption()
+	opt.SkipMux = true
+	vInfo := &entity.VInfo{Title: "Test Video"}
+	p := &entity.Page{Index: 1, Aid: "123", Cid: "456", Title: "P1"}
+	workCfg := &WorkConfig{SavePathFormat: "test", Config: config.NewConfig()}
+
+	extractTracks := func(ctx context.Context, client httpclient.Client, cfg *config.Config, logger *slog.Logger, aidOri, aid, cid, epid string, opts parser.ExtractOptions) (*entity.ParsedResult, error) {
+		return &entity.ParsedResult{
+			VideoTracks: []entity.Video{{ID: "1", Dfn: "1080P", BaseUrl: "https://example.com/video.m4v"}},
+			AudioTracks: []entity.Audio{{ID: "1", Dfn: "320K", BaseUrl: "https://example.com/audio.m4a"}},
+		}, nil
+	}
+
+	downloader := &mockDownloader{
+		downloadMTFunc: func(ctx context.Context, url, path string, opts download.Options) error {
+			return os.WriteFile(path, []byte("data"), 0o644)
+		},
+	}
+
+	muxCalled := false
+	muxerMock := &mockMuxer{
+		muxFunc: func(ctx context.Context, cfg muxer.MuxConfig) error {
+			muxCalled = true
+			return nil
+		},
+	}
+
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks, Downloader: downloader, Muxer: muxerMock}
+	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if muxCalled {
+		t.Error("expected mux to be skipped")
+	}
+}
+
+func TestDownloadPage_FLVDownloadAndMerge(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Chdir(tmpDir)
+
+	opt := cli.NewOption()
+	vInfo := &entity.VInfo{Title: "Test Video"}
+	p := &entity.Page{Index: 1, Aid: "123", Cid: "456", Title: "P1"}
+	workCfg := &WorkConfig{SavePathFormat: "test", Config: config.NewConfig()}
+
+	extractTracks := func(ctx context.Context, client httpclient.Client, cfg *config.Config, logger *slog.Logger, aidOri, aid, cid, epid string, opts parser.ExtractOptions) (*entity.ParsedResult, error) {
+		return &entity.ParsedResult{
+			Clips:       []string{"https://example.com/clip1.flv", "https://example.com/clip2.flv"},
+			Dfns:        []string{"80"},
+			VideoTracks: []entity.Video{{ID: "80", Dfn: "1080P"}},
+		}, nil
+	}
+
+	var downloaded []string
+	downloader := &mockDownloader{
+		downloadMTFunc: func(ctx context.Context, url, path string, opts download.Options) error {
+			downloaded = append(downloaded, url)
+			return os.WriteFile(path, []byte("data"), 0o644)
+		},
+	}
+
+	var mergedFiles []string
+	var muxCfg *muxer.MuxConfig
+	muxerMock := &mockMuxer{
+		mergeFLVFunc: func(ctx context.Context, files []string, outPath string) error {
+			mergedFiles = files
+			return os.WriteFile(outPath, []byte("merged"), 0o644)
+		},
+		muxFunc: func(ctx context.Context, cfg muxer.MuxConfig) error {
+			muxCfg = &cfg
+			return nil
+		},
+	}
+
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks, Downloader: downloader, Muxer: muxerMock}
+	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if len(downloaded) != 2 {
+		t.Errorf("expected 2 clip downloads, got %d", len(downloaded))
+	}
+	if len(mergedFiles) != 2 {
+		t.Errorf("expected 2 files merged, got %d", len(mergedFiles))
+	}
+	if muxCfg == nil {
+		t.Fatal("expected mux to be called")
+	}
+	if muxCfg.VideoPath == "" {
+		t.Error("expected merged video path in mux config")
+	}
+}
+
+func TestDownloadPage_FileExistsSkipsDownload(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Chdir(tmpDir)
+
+	opt := cli.NewOption()
+	vInfo := &entity.VInfo{Title: "Test Video"}
+	p := &entity.Page{Index: 1, Aid: "123", Cid: "456", Title: "P1"}
+	workCfg := &WorkConfig{SavePathFormat: "test", Config: config.NewConfig()}
+
+	// Create the output file so it already exists
+	if err := os.WriteFile("test.mp4", []byte("exists"), 0o644); err != nil {
+		t.Fatalf("create existing file: %v", err)
+	}
+
+	extractTracks := func(ctx context.Context, client httpclient.Client, cfg *config.Config, logger *slog.Logger, aidOri, aid, cid, epid string, opts parser.ExtractOptions) (*entity.ParsedResult, error) {
+		return &entity.ParsedResult{
+			VideoTracks: []entity.Video{{ID: "1", Dfn: "1080P", BaseUrl: "https://example.com/video.m4v"}},
+		}, nil
+	}
+
+	downloadCalled := false
+	downloader := &mockDownloader{
+		downloadMTFunc: func(ctx context.Context, url, path string, opts download.Options) error {
+			downloadCalled = true
+			return nil
+		},
+	}
+
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks, Downloader: downloader, Muxer: &mockMuxer{}}
+	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if downloadCalled {
+		t.Error("expected download to be skipped when file exists")
+	}
+}
+
+func TestDownloadPage_RetryLogic(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Chdir(tmpDir)
+
+	opt := cli.NewOption()
+	vInfo := &entity.VInfo{Title: "Test Video"}
+	p := &entity.Page{Index: 1, Aid: "123", Cid: "456", Title: "P1"}
+	workCfg := &WorkConfig{SavePathFormat: "test", Config: config.NewConfig()}
+
+	callCount := 0
+	extractTracks := func(ctx context.Context, client httpclient.Client, cfg *config.Config, logger *slog.Logger, aidOri, aid, cid, epid string, opts parser.ExtractOptions) (*entity.ParsedResult, error) {
+		callCount++
+		if callCount < 2 {
+			return nil, errors.New("network error")
+		}
+		return &entity.ParsedResult{
+			VideoTracks: []entity.Video{{ID: "1", Dfn: "1080P", BaseUrl: "https://example.com/video.m4v"}},
+		}, nil
+	}
+
+	downloader := &mockDownloader{
+		downloadMTFunc: func(ctx context.Context, url, path string, opts download.Options) error {
+			return os.WriteFile(path, []byte("data"), 0o644)
+		},
+	}
+
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks, Downloader: downloader, Muxer: &mockMuxer{}}
+	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if callCount != 2 {
+		t.Errorf("expected 2 extract calls (1 retry), got %d", callCount)
+	}
+}
+
+func TestDownloadPage_RetryExhausted(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Chdir(tmpDir)
+
+	opt := cli.NewOption()
+	vInfo := &entity.VInfo{Title: "Test Video"}
+	p := &entity.Page{Index: 1, Aid: "123", Cid: "456", Title: "P1"}
+	workCfg := &WorkConfig{SavePathFormat: "test", Config: config.NewConfig()}
+
+	extractTracks := func(ctx context.Context, client httpclient.Client, cfg *config.Config, logger *slog.Logger, aidOri, aid, cid, epid string, opts parser.ExtractOptions) (*entity.ParsedResult, error) {
+		return nil, errors.New("persistent network error")
+	}
+
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks, Downloader: &mockDownloader{}, Muxer: &mockMuxer{}}
+	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
+	if err == nil {
+		t.Fatal("expected error after retries exhausted")
+	}
+	if !strings.Contains(err.Error(), "download page failed after 3 retries") {
+		t.Errorf("unexpected error message: %v", err)
+	}
+}
+
+func TestDownloadPage_DASHDanmakuDownload(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Chdir(tmpDir)
+
+	opt := cli.NewOption()
+	vInfo := &entity.VInfo{Title: "Test Video"}
+	p := &entity.Page{Index: 1, Aid: "123", Cid: "456", Title: "P1"}
+	workCfg := &WorkConfig{SavePathFormat: "test", Config: config.NewConfig(), DownloadDanmaku: true, DownloadDanmakuFormats: []string{"ass", "xml"}}
+
+	extractTracks := func(ctx context.Context, client httpclient.Client, cfg *config.Config, logger *slog.Logger, aidOri, aid, cid, epid string, opts parser.ExtractOptions) (*entity.ParsedResult, error) {
+		return &entity.ParsedResult{
+			VideoTracks: []entity.Video{{ID: "1", Dfn: "1080P", BaseUrl: "https://example.com/video.m4v"}},
+		}, nil
+	}
+
+	danmakuXML := `<?xml version="1.0" encoding="UTF-8"?><i><d p="0,1,25,16777215,0,0,0,0">Hello</d></i>`
+	client := &mockClient{
+		getFunc: func(ctx context.Context, url string, opts ...httpclient.RequestOption) (*http.Response, error) {
+			if strings.Contains(url, "comment.bilibili.com") {
+				return &http.Response{Body: io.NopCloser(strings.NewReader(danmakuXML)), StatusCode: 200}, nil
+			}
+			return &http.Response{Body: io.NopCloser(strings.NewReader("{}")), StatusCode: 200}, nil
+		},
+	}
+
+	downloader := &mockDownloader{
+		downloadMTFunc: func(ctx context.Context, url, path string, opts download.Options) error {
+			return os.WriteFile(path, []byte("data"), 0o644)
+		},
+	}
+
+	deps := DownloadDeps{HTTPClient: client, Logger: discardLogger(), ExtractTracks: extractTracks, Downloader: downloader, Muxer: &mockMuxer{}}
+	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	// XML should be kept
+	xmlPath := filepath.Join(tmpDir, "123", "123.xml")
+	if _, err := os.Stat(xmlPath); os.IsNotExist(err) {
+		t.Errorf("expected danmaku xml to exist at %s", xmlPath)
+	}
+
+	// ASS should be generated
+	assPath := filepath.Join(tmpDir, "123", "123.ass")
+	if _, err := os.Stat(assPath); os.IsNotExist(err) {
+		t.Errorf("expected danmaku ass to exist at %s", assPath)
+	}
+}
+
+func TestDownloadPage_DASHDanmakuAssOnly(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Chdir(tmpDir)
+
+	opt := cli.NewOption()
+	vInfo := &entity.VInfo{Title: "Test Video"}
+	p := &entity.Page{Index: 1, Aid: "123", Cid: "456", Title: "P1"}
+	workCfg := &WorkConfig{SavePathFormat: "test", Config: config.NewConfig(), DownloadDanmaku: true, DownloadDanmakuFormats: []string{"ass"}}
+
+	extractTracks := func(ctx context.Context, client httpclient.Client, cfg *config.Config, logger *slog.Logger, aidOri, aid, cid, epid string, opts parser.ExtractOptions) (*entity.ParsedResult, error) {
+		return &entity.ParsedResult{
+			VideoTracks: []entity.Video{{ID: "1", Dfn: "1080P", BaseUrl: "https://example.com/video.m4v"}},
+		}, nil
+	}
+
+	danmakuXML := `<?xml version="1.0" encoding="UTF-8"?><i><d p="0,1,25,16777215,0,0,0,0">Hello</d></i>`
+	client := &mockClient{
+		getFunc: func(ctx context.Context, url string, opts ...httpclient.RequestOption) (*http.Response, error) {
+			if strings.Contains(url, "comment.bilibili.com") {
+				return &http.Response{Body: io.NopCloser(strings.NewReader(danmakuXML)), StatusCode: 200}, nil
+			}
+			return &http.Response{Body: io.NopCloser(strings.NewReader("{}")), StatusCode: 200}, nil
+		},
+	}
+
+	downloader := &mockDownloader{
+		downloadMTFunc: func(ctx context.Context, url, path string, opts download.Options) error {
+			return os.WriteFile(path, []byte("data"), 0o644)
+		},
+	}
+
+	deps := DownloadDeps{HTTPClient: client, Logger: discardLogger(), ExtractTracks: extractTracks, Downloader: downloader, Muxer: &mockMuxer{}}
+	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	// XML should be deleted
+	xmlPath := filepath.Join(tmpDir, "123", "123.xml")
+	if _, err := os.Stat(xmlPath); !os.IsNotExist(err) {
+		t.Errorf("expected danmaku xml to be deleted")
+	}
+
+	// ASS should be generated
+	assPath := filepath.Join(tmpDir, "123", "123.ass")
+	if _, err := os.Stat(assPath); os.IsNotExist(err) {
+		t.Errorf("expected danmaku ass to exist at %s", assPath)
+	}
+}
+
+func TestDownloadPage_DASHCleanup(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Chdir(tmpDir)
+
+	opt := cli.NewOption()
+	vInfo := &entity.VInfo{Title: "Test Video"}
+	p := &entity.Page{Index: 1, Aid: "123", Cid: "456", Title: "P1"}
+	workCfg := &WorkConfig{SavePathFormat: "test", Config: config.NewConfig()}
+
+	extractTracks := func(ctx context.Context, client httpclient.Client, cfg *config.Config, logger *slog.Logger, aidOri, aid, cid, epid string, opts parser.ExtractOptions) (*entity.ParsedResult, error) {
+		return &entity.ParsedResult{
+			VideoTracks: []entity.Video{{ID: "1", Dfn: "1080P", BaseUrl: "https://example.com/video.m4v"}},
+			AudioTracks: []entity.Audio{{ID: "1", Dfn: "320K", BaseUrl: "https://example.com/audio.m4a"}},
+		}, nil
+	}
+
+	downloader := &mockDownloader{
+		downloadMTFunc: func(ctx context.Context, url, path string, opts download.Options) error {
+			return os.WriteFile(path, []byte("data"), 0o644)
+		},
+	}
+
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks, Downloader: downloader, Muxer: &mockMuxer{}}
+	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	// Temp files should be cleaned up
+	videoPath := filepath.Join(tmpDir, "123", "123.m4v")
+	if _, err := os.Stat(videoPath); !os.IsNotExist(err) {
+		t.Errorf("expected video temp file to be cleaned up")
+	}
+	audioPath := filepath.Join(tmpDir, "123", "123.m4a")
+	if _, err := os.Stat(audioPath); !os.IsNotExist(err) {
+		t.Errorf("expected audio temp file to be cleaned up")
+	}
+}
+
+func TestDownloadPage_FLVCleanup(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Chdir(tmpDir)
+
+	opt := cli.NewOption()
+	vInfo := &entity.VInfo{Title: "Test Video"}
+	p := &entity.Page{Index: 1, Aid: "123", Cid: "456", Title: "P1"}
+	workCfg := &WorkConfig{SavePathFormat: "test", Config: config.NewConfig()}
+
+	extractTracks := func(ctx context.Context, client httpclient.Client, cfg *config.Config, logger *slog.Logger, aidOri, aid, cid, epid string, opts parser.ExtractOptions) (*entity.ParsedResult, error) {
+		return &entity.ParsedResult{
+			Clips:       []string{"https://example.com/clip1.flv"},
+			Dfns:        []string{"80"},
+			VideoTracks: []entity.Video{{ID: "80", Dfn: "1080P"}},
+		}, nil
+	}
+
+	downloader := &mockDownloader{
+		downloadMTFunc: func(ctx context.Context, url, path string, opts download.Options) error {
+			return os.WriteFile(path, []byte("data"), 0o644)
+		},
+	}
+
+	muxerMock := &mockMuxer{
+		mergeFLVFunc: func(ctx context.Context, files []string, outPath string) error {
+			return os.WriteFile(outPath, []byte("merged"), 0o644)
+		},
+	}
+
+	deps := DownloadDeps{HTTPClient: &mockClient{}, Logger: discardLogger(), ExtractTracks: extractTracks, Downloader: downloader, Muxer: muxerMock}
+	err := DownloadPage(context.Background(), p, opt, vInfo, []entity.Page{*p}, workCfg, deps)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	clipPath := filepath.Join(tmpDir, "123", "123_clip0.flv")
+	if _, err := os.Stat(clipPath); !os.IsNotExist(err) {
+		t.Errorf("expected clip temp file to be cleaned up")
+	}
+	mergedPath := filepath.Join(tmpDir, "123", "123.merged.flv")
+	if _, err := os.Stat(mergedPath); !os.IsNotExist(err) {
+		t.Errorf("expected merged temp file to be cleaned up")
+	}
+}
