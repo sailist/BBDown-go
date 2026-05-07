@@ -319,12 +319,12 @@ func ConvertSubFromJSON(jsonStr string) (string, error) {
 
 	var b strings.Builder
 	for i, line := range sub.Body {
-		b.WriteString(fmt.Sprintf("%d\n", i+1))
+		fmt.Fprintf(&b, "%d\n", i+1)
 		from := 0.0
 		if line.From > 0 {
 			from = line.From
 		}
-		b.WriteString(fmt.Sprintf("%s --> %s\n", formatTime(from), formatTime(line.To)))
+		fmt.Fprintf(&b, "%s --> %s\n", formatTime(from), formatTime(line.To))
 		if line.Content != "" {
 			b.WriteString(line.Content)
 			b.WriteString("\n")

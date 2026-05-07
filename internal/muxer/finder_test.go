@@ -69,6 +69,9 @@ func TestFindExecutable_NotFound(t *testing.T) {
 }
 
 func TestCheckFFmpegDOVI(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("skipping on Windows: mock scripts are not valid PE executables")
+	}
 	dir := t.TempDir()
 	name := "ffmpeg"
 	if runtime.GOOS == "windows" {
@@ -107,6 +110,9 @@ echo libavutil      57. 28.100
 }
 
 func TestCheckFFmpegDOVI_OldVersion(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("skipping on Windows: mock scripts are not valid PE executables")
+	}
 	dir := t.TempDir()
 	name := "ffmpeg"
 	if runtime.GOOS == "windows" {
@@ -142,6 +148,9 @@ echo libavutil      56. 70.100
 }
 
 func TestCheckFFmpegDOVI_BoundaryVersion(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("skipping on Windows: mock scripts are not valid PE executables")
+	}
 	dir := t.TempDir()
 	name := "ffmpeg"
 	if runtime.GOOS == "windows" {
@@ -188,6 +197,9 @@ func TestCheckFFmpegDOVI_NotFound(t *testing.T) {
 }
 
 func TestCheckFFmpegDOVI_NoLibavutil(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("skipping on Windows: mock scripts are not valid PE executables")
+	}
 	dir := t.TempDir()
 	name := "ffmpeg"
 	if runtime.GOOS == "windows" {

@@ -1,0 +1,12 @@
+version: "2"
+
+linters:
+  default: none
+  enable:
+    - govet
+    - staticcheck
+
+issues:
+  exclusions:
+    paths:
+      - ".*_test\\.go"

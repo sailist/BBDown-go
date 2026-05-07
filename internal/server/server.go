@@ -193,9 +193,7 @@ func (s *Server) addTask(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"aid": aid, "status": "already running"})
 		return
 	}
-	if _, exists := s.finishedTasks[aid]; exists {
-		delete(s.finishedTasks, aid)
-	}
+	delete(s.finishedTasks, aid)
 
 	task := &DownloadTask{
 		Aid:            aid,

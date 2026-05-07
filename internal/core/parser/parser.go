@@ -43,8 +43,7 @@ func ExtractTracks(ctx context.Context, client httpclient.Client, cfg *config.Co
 
 	// intl API: stream_list path
 	if opts.IntlApi && strings.Contains(webJson, `"stream_list"`) {
-		result, err := parseIntlTracks(webJson)
-		if err != nil {
+		if _, err := parseIntlTracks(webJson); err != nil {
 			return nil, fmt.Errorf("parse intl tracks: %w", err)
 		}
 
@@ -58,7 +57,7 @@ func ExtractTracks(ctx context.Context, client httpclient.Client, cfg *config.Co
 		if err != nil {
 			return nil, fmt.Errorf("read intl re-fetch body: %w", err)
 		}
-		result, err = parseIntlTracks(webJson)
+		result, err := parseIntlTracks(webJson)
 		if err != nil {
 			return nil, fmt.Errorf("parse intl tracks code=1: %w", err)
 		}

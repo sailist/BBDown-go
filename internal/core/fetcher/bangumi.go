@@ -103,7 +103,7 @@ func (f *BangumiFetcher) Fetch(ctx context.Context, id string) (*entity.VInfo, e
 	}
 
 	hasEp := strings.Contains(string(result.Episodes), "/ep"+id)
-	if !(len(pages) > 0 && hasEp) {
+	if len(pages) == 0 || !hasEp {
 		for _, section := range result.Section {
 			if strings.Contains(string(section.Episodes), "/ep"+id) {
 				title += "[" + section.Title + "]"

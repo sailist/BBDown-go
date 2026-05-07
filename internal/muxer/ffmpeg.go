@@ -285,10 +285,10 @@ func getFFmpegMetaString(points []entity.ViewPoint) string {
 	const timeBase = 1000
 	for _, p := range points {
 		sb.WriteString("[CHAPTER]\n")
-		sb.WriteString(fmt.Sprintf("TIMEBASE=1/%d\n", timeBase))
-		sb.WriteString(fmt.Sprintf("START=%d\n", p.Start*timeBase))
-		sb.WriteString(fmt.Sprintf("END=%d\n", p.End*timeBase))
-		sb.WriteString(fmt.Sprintf("title=%s\n", p.Title))
+		fmt.Fprintf(&sb, "TIMEBASE=1/%d\n", timeBase)
+		fmt.Fprintf(&sb, "START=%d\n", p.Start*timeBase)
+		fmt.Fprintf(&sb, "END=%d\n", p.End*timeBase)
+		fmt.Fprintf(&sb, "title=%s\n", p.Title)
 		sb.WriteString("\n")
 	}
 	return sb.String()

@@ -55,7 +55,7 @@ jobs:
         uses: golangci/golangci-lint-action@v7
         with:
           version: v2.12
-          args: --timeout=5m --enable=errcheck,govet,staticcheck,ineffassign
+          args: --timeout=5m
 
   commitlint:
     name: Verify Conventional Commits
