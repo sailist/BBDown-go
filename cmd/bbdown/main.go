@@ -69,6 +69,10 @@ func main() {
 
 	// Execute
 	if err := cmd.ExecuteContext(ctx); err != nil {
+		if err == context.Canceled {
+			fmt.Fprintln(os.Stderr, "\n已取消")
+			os.Exit(130)
+		}
 		logger.Error("command failed", "error", err)
 		os.Exit(1)
 	}

@@ -128,6 +128,11 @@ func (d *SingleDownloader) attemptDownload(ctx context.Context, url, tmpPath str
 
 	buf := make([]byte, 32*1024)
 	for {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
 		n, err := resp.Body.Read(buf)
 		if n > 0 {
 			if _, werr := f.Write(buf[:n]); werr != nil {

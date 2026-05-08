@@ -381,8 +381,9 @@ func TestDownloadPages_DelayBetweenPages(t *testing.T) {
 
 	var sleeps []time.Duration
 	origSleep := sleepFunc
-	sleepFunc = func(d time.Duration) {
+	sleepFunc = func(ctx context.Context, d time.Duration) error {
 		sleeps = append(sleeps, d)
+		return nil
 	}
 	defer func() { sleepFunc = origSleep }()
 

@@ -121,6 +121,12 @@ func (d *MultiThreadDownloader) DownloadMultiThread(ctx context.Context, url, pa
 	}
 
 	for i := 0; i < numChunks; i++ {
+		select {
+		case <-ctx.Done():
+			out.Close()
+			return ctx.Err()
+		default:
+		}
 		tmpExt := ".aclip"
 		if ext == ".mp4" {
 			tmpExt = ".vclip"
@@ -197,6 +203,11 @@ func (d *MultiThreadDownloader) downloadChunk(ctx context.Context, url, path str
 
 	buf := make([]byte, 32*1024)
 	for {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
 		n, err := resp.Body.Read(buf)
 		if n > 0 {
 			if _, werr := f.Write(buf[:n]); werr != nil {

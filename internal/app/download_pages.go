@@ -15,7 +15,14 @@ import (
 	"github.com/sailist/BBDown-go/internal/core/entity"
 )
 
-var sleepFunc = time.Sleep
+var sleepFunc = func(ctx context.Context, d time.Duration) error {
+	select {
+	case <-ctx.Done():
+		return ctx.Err()
+	case <-time.After(d):
+		return nil
+	}
+}
 
 var archiveMutex sync.Mutex
 
@@ -167,7 +174,9 @@ func DownloadPages(ctx context.Context, opt *cli.Option, vInfo *entity.VInfo, wo
 
 		if len(selectedPages) > 1 && workCfg.Delay > 0 {
 			deps.Logger.Info(fmt.Sprintf("停顿%d秒...", workCfg.Delay))
-			sleepFunc(time.Duration(workCfg.Delay) * time.Second)
+			if err := sleepFunc(ctx, time.Duration(workCfg.Delay)*time.Second); err != nil {
+				return err
+			}
 		}
 
 		deps.Logger.Info(fmt.Sprintf("开始解析P%d: %s... (%d of %d)", p.Index, p.Aid, i+1, len(selectedPages)))
