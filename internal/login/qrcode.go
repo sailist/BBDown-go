@@ -31,9 +31,9 @@ func (c *ConsoleQRCode) RenderWithSymbols(dark, light string) {
 	for y := range bitmap {
 		for x := range bitmap[y] {
 			if bitmap[y][x] {
-				print(dark)
+				print(dark + dark)
 			} else {
-				print(light)
+				print(light + light)
 			}
 		}
 		println()
