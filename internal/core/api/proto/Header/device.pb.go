@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v7.34.1
-// source: Header/device.proto
+// source: device.proto
 
 package Header
 
@@ -43,7 +43,7 @@ type Device struct {
 
 func (x *Device) Reset() {
 	*x = Device{}
-	mi := &file_Header_device_proto_msgTypes[0]
+	mi := &file_device_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -55,7 +55,7 @@ func (x *Device) String() string {
 func (*Device) ProtoMessage() {}
 
 func (x *Device) ProtoReflect() protoreflect.Message {
-	mi := &file_Header_device_proto_msgTypes[0]
+	mi := &file_device_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -68,7 +68,7 @@ func (x *Device) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Device.ProtoReflect.Descriptor instead.
 func (*Device) Descriptor() ([]byte, []int) {
-	return file_Header_device_proto_rawDescGZIP(), []int{0}
+	return file_device_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Device) GetAppId() int32 {
@@ -169,11 +169,11 @@ func (x *Device) GetFp() string {
 	return ""
 }
 
-var File_Header_device_proto protoreflect.FileDescriptor
+var File_device_proto protoreflect.FileDescriptor
 
-const file_Header_device_proto_rawDesc = "" +
+const file_device_proto_rawDesc = "" +
 	"\n" +
-	"\x13Header/device.proto\"\xdc\x02\n" +
+	"\fdevice.proto\"\xdc\x02\n" +
 	"\x06Device\x12\x14\n" +
 	"\x05appId\x18\x01 \x01(\x05R\x05appId\x12\x14\n" +
 	"\x05build\x18\x02 \x01(\x05R\x05build\x12\x14\n" +
@@ -189,25 +189,25 @@ const file_Header_device_proto_rawDesc = "" +
 	"\afpLocal\x18\v \x01(\tR\afpLocal\x12\x1a\n" +
 	"\bfpRemote\x18\f \x01(\tR\bfpRemote\x12 \n" +
 	"\vversionName\x18\r \x01(\tR\vversionName\x12\x0e\n" +
-	"\x02fp\x18\x0e \x01(\tR\x02fpBUZ<github.com/nilaonai/bbdown-go/internal/core/api/proto/Header\xaa\x02\x14BBDown.Core.Protobuf"
+	"\x02fp\x18\x0e \x01(\tR\x02fpBTZ;github.com/sailist/BBDown-go/internal/core/api/proto/Header\xaa\x02\x14BBDown.Core.Protobuf"
 
 var (
-	file_Header_device_proto_rawDescOnce sync.Once
-	file_Header_device_proto_rawDescData []byte
+	file_device_proto_rawDescOnce sync.Once
+	file_device_proto_rawDescData []byte
 )
 
-func file_Header_device_proto_rawDescGZIP() []byte {
-	file_Header_device_proto_rawDescOnce.Do(func() {
-		file_Header_device_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_Header_device_proto_rawDesc), len(file_Header_device_proto_rawDesc)))
+func file_device_proto_rawDescGZIP() []byte {
+	file_device_proto_rawDescOnce.Do(func() {
+		file_device_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_device_proto_rawDesc), len(file_device_proto_rawDesc)))
 	})
-	return file_Header_device_proto_rawDescData
+	return file_device_proto_rawDescData
 }
 
-var file_Header_device_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
-var file_Header_device_proto_goTypes = []any{
+var file_device_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_device_proto_goTypes = []any{
 	(*Device)(nil), // 0: Device
 }
-var file_Header_device_proto_depIdxs = []int32{
+var file_device_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
 	0, // [0:0] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -215,26 +215,26 @@ var file_Header_device_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_Header_device_proto_init() }
-func file_Header_device_proto_init() {
-	if File_Header_device_proto != nil {
+func init() { file_device_proto_init() }
+func file_device_proto_init() {
+	if File_device_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_Header_device_proto_rawDesc), len(file_Header_device_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_device_proto_rawDesc), len(file_device_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_Header_device_proto_goTypes,
-		DependencyIndexes: file_Header_device_proto_depIdxs,
-		MessageInfos:      file_Header_device_proto_msgTypes,
+		GoTypes:           file_device_proto_goTypes,
+		DependencyIndexes: file_device_proto_depIdxs,
+		MessageInfos:      file_device_proto_msgTypes,
 	}.Build()
-	File_Header_device_proto = out.File
-	file_Header_device_proto_goTypes = nil
-	file_Header_device_proto_depIdxs = nil
+	File_device_proto = out.File
+	file_device_proto_goTypes = nil
+	file_device_proto_depIdxs = nil
 }

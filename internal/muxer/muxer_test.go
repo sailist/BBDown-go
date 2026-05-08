@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/nilaonai/bbdown-go/internal/core/entity"
+	"github.com/sailist/BBDown-go/internal/core/entity"
 )
 
 // mockMuxer is a test implementation of the Muxer interface.

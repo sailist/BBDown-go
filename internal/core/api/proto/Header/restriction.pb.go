@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v7.34.1
-// source: Header/restriction.proto
+// source: restriction.proto
 
 package Header
 
@@ -54,11 +54,11 @@ func (x Restriction_Mode) String() string {
 }
 
 func (Restriction_Mode) Descriptor() protoreflect.EnumDescriptor {
-	return file_Header_restriction_proto_enumTypes[0].Descriptor()
+	return file_restriction_proto_enumTypes[0].Descriptor()
 }
 
 func (Restriction_Mode) Type() protoreflect.EnumType {
-	return &file_Header_restriction_proto_enumTypes[0]
+	return &file_restriction_proto_enumTypes[0]
 }
 
 func (x Restriction_Mode) Number() protoreflect.EnumNumber {
@@ -77,7 +77,7 @@ func (x *Restriction_Mode) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use Restriction_Mode.Descriptor instead.
 func (Restriction_Mode) EnumDescriptor() ([]byte, []int) {
-	return file_Header_restriction_proto_rawDescGZIP(), []int{0, 0}
+	return file_restriction_proto_rawDescGZIP(), []int{0, 0}
 }
 
 type Restriction struct {
@@ -92,7 +92,7 @@ type Restriction struct {
 
 func (x *Restriction) Reset() {
 	*x = Restriction{}
-	mi := &file_Header_restriction_proto_msgTypes[0]
+	mi := &file_restriction_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -104,7 +104,7 @@ func (x *Restriction) String() string {
 func (*Restriction) ProtoMessage() {}
 
 func (x *Restriction) ProtoReflect() protoreflect.Message {
-	mi := &file_Header_restriction_proto_msgTypes[0]
+	mi := &file_restriction_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -117,7 +117,7 @@ func (x *Restriction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Restriction.ProtoReflect.Descriptor instead.
 func (*Restriction) Descriptor() ([]byte, []int) {
-	return file_Header_restriction_proto_rawDescGZIP(), []int{0}
+	return file_restriction_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Restriction) GetTeenagersMode() bool {
@@ -148,11 +148,11 @@ func (x *Restriction) GetReview() bool {
 	return false
 }
 
-var File_Header_restriction_proto protoreflect.FileDescriptor
+var File_restriction_proto protoreflect.FileDescriptor
 
-const file_Header_restriction_proto_rawDesc = "" +
+const file_restriction_proto_rawDesc = "" +
 	"\n" +
-	"\x18Header/restriction.proto\"\xc4\x01\n" +
+	"\x11restriction.proto\"\xc4\x01\n" +
 	"\vRestriction\x12$\n" +
 	"\rteenagersMode\x18\x01 \x01(\bR\rteenagersMode\x12 \n" +
 	"\vlessonsMode\x18\x02 \x01(\bR\vlessonsMode\x12%\n" +
@@ -162,27 +162,27 @@ const file_Header_restriction_proto_rawDesc = "" +
 	"\n" +
 	"\x06NORMAL\x10\x00\x12\r\n" +
 	"\tTEENAGERS\x10\x01\x12\v\n" +
-	"\aLESSONS\x10\x02BUZ<github.com/nilaonai/bbdown-go/internal/core/api/proto/Header\xaa\x02\x14BBDown.Core.Protobuf"
+	"\aLESSONS\x10\x02BTZ;github.com/sailist/BBDown-go/internal/core/api/proto/Header\xaa\x02\x14BBDown.Core.Protobuf"
 
 var (
-	file_Header_restriction_proto_rawDescOnce sync.Once
-	file_Header_restriction_proto_rawDescData []byte
+	file_restriction_proto_rawDescOnce sync.Once
+	file_restriction_proto_rawDescData []byte
 )
 
-func file_Header_restriction_proto_rawDescGZIP() []byte {
-	file_Header_restriction_proto_rawDescOnce.Do(func() {
-		file_Header_restriction_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_Header_restriction_proto_rawDesc), len(file_Header_restriction_proto_rawDesc)))
+func file_restriction_proto_rawDescGZIP() []byte {
+	file_restriction_proto_rawDescOnce.Do(func() {
+		file_restriction_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_restriction_proto_rawDesc), len(file_restriction_proto_rawDesc)))
 	})
-	return file_Header_restriction_proto_rawDescData
+	return file_restriction_proto_rawDescData
 }
 
-var file_Header_restriction_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_Header_restriction_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
-var file_Header_restriction_proto_goTypes = []any{
+var file_restriction_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_restriction_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_restriction_proto_goTypes = []any{
 	(Restriction_Mode)(0), // 0: Restriction.Mode
 	(*Restriction)(nil),   // 1: Restriction
 }
-var file_Header_restriction_proto_depIdxs = []int32{
+var file_restriction_proto_depIdxs = []int32{
 	0, // 0: Restriction.mode:type_name -> Restriction.Mode
 	1, // [1:1] is the sub-list for method output_type
 	1, // [1:1] is the sub-list for method input_type
@@ -191,27 +191,27 @@ var file_Header_restriction_proto_depIdxs = []int32{
 	0, // [0:1] is the sub-list for field type_name
 }
 
-func init() { file_Header_restriction_proto_init() }
-func file_Header_restriction_proto_init() {
-	if File_Header_restriction_proto != nil {
+func init() { file_restriction_proto_init() }
+func file_restriction_proto_init() {
+	if File_restriction_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_Header_restriction_proto_rawDesc), len(file_Header_restriction_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_restriction_proto_rawDesc), len(file_restriction_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_Header_restriction_proto_goTypes,
-		DependencyIndexes: file_Header_restriction_proto_depIdxs,
-		EnumInfos:         file_Header_restriction_proto_enumTypes,
-		MessageInfos:      file_Header_restriction_proto_msgTypes,
+		GoTypes:           file_restriction_proto_goTypes,
+		DependencyIndexes: file_restriction_proto_depIdxs,
+		EnumInfos:         file_restriction_proto_enumTypes,
+		MessageInfos:      file_restriction_proto_msgTypes,
 	}.Build()
-	File_Header_restriction_proto = out.File
-	file_Header_restriction_proto_goTypes = nil
-	file_Header_restriction_proto_depIdxs = nil
+	File_restriction_proto = out.File
+	file_restriction_proto_goTypes = nil
+	file_restriction_proto_depIdxs = nil
 }

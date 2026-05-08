@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/nilaonai/bbdown-go/internal/core/entity"
+	"github.com/sailist/BBDown-go/internal/core/entity"
 )
 
 // SortVideoTracks sorts video tracks by dfn/encoding priority, id, and bandwidth.

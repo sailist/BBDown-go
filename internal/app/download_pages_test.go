@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/nilaonai/bbdown-go/internal/cli"
-	"github.com/nilaonai/bbdown-go/internal/config"
-	"github.com/nilaonai/bbdown-go/internal/core/entity"
+	"github.com/sailist/BBDown-go/internal/cli"
+	"github.com/sailist/BBDown-go/internal/config"
+	"github.com/sailist/BBDown-go/internal/core/entity"
 )
 
 func TestParseSelectPage_Empty(t *testing.T) {

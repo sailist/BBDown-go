@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/nilaonai/bbdown-go/pkg/bvconv"
-	"github.com/nilaonai/bbdown-go/pkg/httpclient"
+	"github.com/sailist/BBDown-go/pkg/bvconv"
+	"github.com/sailist/BBDown-go/pkg/httpclient"
 )
 
 const defaultEpHost = "api.bilibili.com"

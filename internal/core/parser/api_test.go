@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/nilaonai/bbdown-go/internal/config"
+	"github.com/sailist/BBDown-go/internal/config"
 )
 
 func TestBuildWebPlayurlAPI(t *testing.T) {

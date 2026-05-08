@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/nilaonai/bbdown-go/internal/core/entity"
-	"github.com/nilaonai/bbdown-go/internal/core/util"
+	"github.com/sailist/BBDown-go/internal/core/entity"
+	"github.com/sailist/BBDown-go/internal/core/util"
 )
 
 // MP4BoxMuxer implements Muxer using MP4Box.

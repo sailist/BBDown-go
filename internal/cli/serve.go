@@ -7,8 +7,8 @@ import (
 	"net/url"
 
 	"github.com/spf13/cobra"
-	"github.com/nilaonai/bbdown-go/internal/config"
-	"github.com/nilaonai/bbdown-go/internal/server"
+	"github.com/sailist/BBDown-go/internal/config"
+	"github.com/sailist/BBDown-go/internal/server"
 )
 
 // ServeOption holds flags for the serve subcommand.

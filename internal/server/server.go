@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/nilaonai/bbdown-go/internal/config"
+	"github.com/sailist/BBDown-go/internal/config"
 )
 
 // DownloadTask represents a single download job.

@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/nilaonai/bbdown-go/pkg/httpclient"
+	"github.com/sailist/BBDown-go/pkg/httpclient"
 )
 
 func TestParseInput_BV(t *testing.T) {

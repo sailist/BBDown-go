@@ -6,7 +6,7 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/nilaonai/bbdown-go/pkg/httpclient"
+	"github.com/sailist/BBDown-go/pkg/httpclient"
 )
 
 const (

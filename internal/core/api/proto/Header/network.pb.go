@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v7.34.1
-// source: Header/network.proto
+// source: network.proto
 
 package Header
 
@@ -63,11 +63,11 @@ func (x Network_TYPE) String() string {
 }
 
 func (Network_TYPE) Descriptor() protoreflect.EnumDescriptor {
-	return file_Header_network_proto_enumTypes[0].Descriptor()
+	return file_network_proto_enumTypes[0].Descriptor()
 }
 
 func (Network_TYPE) Type() protoreflect.EnumType {
-	return &file_Header_network_proto_enumTypes[0]
+	return &file_network_proto_enumTypes[0]
 }
 
 func (x Network_TYPE) Number() protoreflect.EnumNumber {
@@ -86,7 +86,7 @@ func (x *Network_TYPE) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use Network_TYPE.Descriptor instead.
 func (Network_TYPE) EnumDescriptor() ([]byte, []int) {
-	return file_Header_network_proto_rawDescGZIP(), []int{0, 0}
+	return file_network_proto_rawDescGZIP(), []int{0, 0}
 }
 
 type Network_TF int32
@@ -134,11 +134,11 @@ func (x Network_TF) String() string {
 }
 
 func (Network_TF) Descriptor() protoreflect.EnumDescriptor {
-	return file_Header_network_proto_enumTypes[1].Descriptor()
+	return file_network_proto_enumTypes[1].Descriptor()
 }
 
 func (Network_TF) Type() protoreflect.EnumType {
-	return &file_Header_network_proto_enumTypes[1]
+	return &file_network_proto_enumTypes[1]
 }
 
 func (x Network_TF) Number() protoreflect.EnumNumber {
@@ -157,7 +157,7 @@ func (x *Network_TF) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use Network_TF.Descriptor instead.
 func (Network_TF) EnumDescriptor() ([]byte, []int) {
-	return file_Header_network_proto_rawDescGZIP(), []int{0, 1}
+	return file_network_proto_rawDescGZIP(), []int{0, 1}
 }
 
 type Network struct {
@@ -171,7 +171,7 @@ type Network struct {
 
 func (x *Network) Reset() {
 	*x = Network{}
-	mi := &file_Header_network_proto_msgTypes[0]
+	mi := &file_network_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -183,7 +183,7 @@ func (x *Network) String() string {
 func (*Network) ProtoMessage() {}
 
 func (x *Network) ProtoReflect() protoreflect.Message {
-	mi := &file_Header_network_proto_msgTypes[0]
+	mi := &file_network_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -196,7 +196,7 @@ func (x *Network) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Network.ProtoReflect.Descriptor instead.
 func (*Network) Descriptor() ([]byte, []int) {
-	return file_Header_network_proto_rawDescGZIP(), []int{0}
+	return file_network_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Network) GetType() Network_TYPE {
@@ -220,11 +220,11 @@ func (x *Network) GetOid() string {
 	return ""
 }
 
-var File_Header_network_proto protoreflect.FileDescriptor
+var File_network_proto protoreflect.FileDescriptor
 
-const file_Header_network_proto_rawDesc = "" +
+const file_network_proto_rawDesc = "" +
 	"\n" +
-	"\x14Header/network.proto\"\x8f\x02\n" +
+	"\rnetwork.proto\"\x8f\x02\n" +
 	"\aNetwork\x12!\n" +
 	"\x04type\x18\x01 \x01(\x0e2\r.Network.TYPER\x04type\x12\x1b\n" +
 	"\x02tf\x18\x02 \x01(\x0e2\v.Network.TFR\x02tf\x12\x10\n" +
@@ -248,28 +248,28 @@ const file_Header_network_proto_rawDesc = "" +
 	"\x05C_PKG\x10\x04\x12\n" +
 	"\n" +
 	"\x06T_CARD\x10\x05\x12\t\n" +
-	"\x05T_PKG\x10\x06BUZ<github.com/nilaonai/bbdown-go/internal/core/api/proto/Header\xaa\x02\x14BBDown.Core.Protobuf"
+	"\x05T_PKG\x10\x06BTZ;github.com/sailist/BBDown-go/internal/core/api/proto/Header\xaa\x02\x14BBDown.Core.Protobuf"
 
 var (
-	file_Header_network_proto_rawDescOnce sync.Once
-	file_Header_network_proto_rawDescData []byte
+	file_network_proto_rawDescOnce sync.Once
+	file_network_proto_rawDescData []byte
 )
 
-func file_Header_network_proto_rawDescGZIP() []byte {
-	file_Header_network_proto_rawDescOnce.Do(func() {
-		file_Header_network_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_Header_network_proto_rawDesc), len(file_Header_network_proto_rawDesc)))
+func file_network_proto_rawDescGZIP() []byte {
+	file_network_proto_rawDescOnce.Do(func() {
+		file_network_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_network_proto_rawDesc), len(file_network_proto_rawDesc)))
 	})
-	return file_Header_network_proto_rawDescData
+	return file_network_proto_rawDescData
 }
 
-var file_Header_network_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_Header_network_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
-var file_Header_network_proto_goTypes = []any{
+var file_network_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_network_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_network_proto_goTypes = []any{
 	(Network_TYPE)(0), // 0: Network.TYPE
 	(Network_TF)(0),   // 1: Network.TF
 	(*Network)(nil),   // 2: Network
 }
-var file_Header_network_proto_depIdxs = []int32{
+var file_network_proto_depIdxs = []int32{
 	0, // 0: Network.type:type_name -> Network.TYPE
 	1, // 1: Network.tf:type_name -> Network.TF
 	2, // [2:2] is the sub-list for method output_type
@@ -279,27 +279,27 @@ var file_Header_network_proto_depIdxs = []int32{
 	0, // [0:2] is the sub-list for field type_name
 }
 
-func init() { file_Header_network_proto_init() }
-func file_Header_network_proto_init() {
-	if File_Header_network_proto != nil {
+func init() { file_network_proto_init() }
+func file_network_proto_init() {
+	if File_network_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_Header_network_proto_rawDesc), len(file_Header_network_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_network_proto_rawDesc), len(file_network_proto_rawDesc)),
 			NumEnums:      2,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_Header_network_proto_goTypes,
-		DependencyIndexes: file_Header_network_proto_depIdxs,
-		EnumInfos:         file_Header_network_proto_enumTypes,
-		MessageInfos:      file_Header_network_proto_msgTypes,
+		GoTypes:           file_network_proto_goTypes,
+		DependencyIndexes: file_network_proto_depIdxs,
+		EnumInfos:         file_network_proto_enumTypes,
+		MessageInfos:      file_network_proto_msgTypes,
 	}.Build()
-	File_Header_network_proto = out.File
-	file_Header_network_proto_goTypes = nil
-	file_Header_network_proto_depIdxs = nil
+	File_network_proto = out.File
+	file_network_proto_goTypes = nil
+	file_network_proto_depIdxs = nil
 }

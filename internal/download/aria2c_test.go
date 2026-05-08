@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/nilaonai/bbdown-go/internal/config"
+	"github.com/sailist/BBDown-go/internal/config"
 )
 
 func TestDownloadWithAria2c_NotFound(t *testing.T) {

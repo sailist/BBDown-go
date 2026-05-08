@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v7.34.1
-// source: Response/playviewreply.proto
+// source: playviewreply.proto
 
 package Response
 
@@ -38,7 +38,7 @@ type VideoInfo struct {
 
 func (x *VideoInfo) Reset() {
 	*x = VideoInfo{}
-	mi := &file_Response_playviewreply_proto_msgTypes[0]
+	mi := &file_playviewreply_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -50,7 +50,7 @@ func (x *VideoInfo) String() string {
 func (*VideoInfo) ProtoMessage() {}
 
 func (x *VideoInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_Response_playviewreply_proto_msgTypes[0]
+	mi := &file_playviewreply_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -63,7 +63,7 @@ func (x *VideoInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VideoInfo.ProtoReflect.Descriptor instead.
 func (*VideoInfo) Descriptor() ([]byte, []int) {
-	return file_Response_playviewreply_proto_rawDescGZIP(), []int{0}
+	return file_playviewreply_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *VideoInfo) GetQuality() uint32 {
@@ -134,7 +134,7 @@ type DolbyItem struct {
 
 func (x *DolbyItem) Reset() {
 	*x = DolbyItem{}
-	mi := &file_Response_playviewreply_proto_msgTypes[1]
+	mi := &file_playviewreply_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -146,7 +146,7 @@ func (x *DolbyItem) String() string {
 func (*DolbyItem) ProtoMessage() {}
 
 func (x *DolbyItem) ProtoReflect() protoreflect.Message {
-	mi := &file_Response_playviewreply_proto_msgTypes[1]
+	mi := &file_playviewreply_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -159,7 +159,7 @@ func (x *DolbyItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DolbyItem.ProtoReflect.Descriptor instead.
 func (*DolbyItem) Descriptor() ([]byte, []int) {
-	return file_Response_playviewreply_proto_rawDescGZIP(), []int{1}
+	return file_playviewreply_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *DolbyItem) GetType() int32 {
@@ -208,7 +208,7 @@ type PlayAbilityConf struct {
 
 func (x *PlayAbilityConf) Reset() {
 	*x = PlayAbilityConf{}
-	mi := &file_Response_playviewreply_proto_msgTypes[2]
+	mi := &file_playviewreply_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -220,7 +220,7 @@ func (x *PlayAbilityConf) String() string {
 func (*PlayAbilityConf) ProtoMessage() {}
 
 func (x *PlayAbilityConf) ProtoReflect() protoreflect.Message {
-	mi := &file_Response_playviewreply_proto_msgTypes[2]
+	mi := &file_playviewreply_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -233,7 +233,7 @@ func (x *PlayAbilityConf) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PlayAbilityConf.ProtoReflect.Descriptor instead.
 func (*PlayAbilityConf) Descriptor() ([]byte, []int) {
-	return file_Response_playviewreply_proto_rawDescGZIP(), []int{2}
+	return file_playviewreply_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *PlayAbilityConf) GetBackgroundPlayDisable() bool {
@@ -415,7 +415,7 @@ type ClipInfo struct {
 
 func (x *ClipInfo) Reset() {
 	*x = ClipInfo{}
-	mi := &file_Response_playviewreply_proto_msgTypes[3]
+	mi := &file_playviewreply_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -427,7 +427,7 @@ func (x *ClipInfo) String() string {
 func (*ClipInfo) ProtoMessage() {}
 
 func (x *ClipInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_Response_playviewreply_proto_msgTypes[3]
+	mi := &file_playviewreply_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -440,7 +440,7 @@ func (x *ClipInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClipInfo.ProtoReflect.Descriptor instead.
 func (*ClipInfo) Descriptor() ([]byte, []int) {
-	return file_Response_playviewreply_proto_rawDescGZIP(), []int{3}
+	return file_playviewreply_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *ClipInfo) GetStart() int32 {
@@ -476,7 +476,7 @@ type BusinessInfo struct {
 
 func (x *BusinessInfo) Reset() {
 	*x = BusinessInfo{}
-	mi := &file_Response_playviewreply_proto_msgTypes[4]
+	mi := &file_playviewreply_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -488,7 +488,7 @@ func (x *BusinessInfo) String() string {
 func (*BusinessInfo) ProtoMessage() {}
 
 func (x *BusinessInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_Response_playviewreply_proto_msgTypes[4]
+	mi := &file_playviewreply_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -501,7 +501,7 @@ func (x *BusinessInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BusinessInfo.ProtoReflect.Descriptor instead.
 func (*BusinessInfo) Descriptor() ([]byte, []int) {
-	return file_Response_playviewreply_proto_rawDescGZIP(), []int{4}
+	return file_playviewreply_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *BusinessInfo) GetIsPreview() bool {
@@ -541,7 +541,7 @@ type Event struct {
 
 func (x *Event) Reset() {
 	*x = Event{}
-	mi := &file_Response_playviewreply_proto_msgTypes[5]
+	mi := &file_playviewreply_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -553,7 +553,7 @@ func (x *Event) String() string {
 func (*Event) ProtoMessage() {}
 
 func (x *Event) ProtoReflect() protoreflect.Message {
-	mi := &file_Response_playviewreply_proto_msgTypes[5]
+	mi := &file_playviewreply_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -566,7 +566,7 @@ func (x *Event) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Event.ProtoReflect.Descriptor instead.
 func (*Event) Descriptor() ([]byte, []int) {
-	return file_Response_playviewreply_proto_rawDescGZIP(), []int{5}
+	return file_playviewreply_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *Event) GetShake() *Shake {
@@ -585,7 +585,7 @@ type Shake struct {
 
 func (x *Shake) Reset() {
 	*x = Shake{}
-	mi := &file_Response_playviewreply_proto_msgTypes[6]
+	mi := &file_playviewreply_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -597,7 +597,7 @@ func (x *Shake) String() string {
 func (*Shake) ProtoMessage() {}
 
 func (x *Shake) ProtoReflect() protoreflect.Message {
-	mi := &file_Response_playviewreply_proto_msgTypes[6]
+	mi := &file_playviewreply_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -610,7 +610,7 @@ func (x *Shake) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Shake.ProtoReflect.Descriptor instead.
 func (*Shake) Descriptor() ([]byte, []int) {
-	return file_Response_playviewreply_proto_rawDescGZIP(), []int{6}
+	return file_playviewreply_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Shake) GetFile() string {
@@ -635,7 +635,7 @@ type DashItem struct {
 
 func (x *DashItem) Reset() {
 	*x = DashItem{}
-	mi := &file_Response_playviewreply_proto_msgTypes[7]
+	mi := &file_playviewreply_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -647,7 +647,7 @@ func (x *DashItem) String() string {
 func (*DashItem) ProtoMessage() {}
 
 func (x *DashItem) ProtoReflect() protoreflect.Message {
-	mi := &file_Response_playviewreply_proto_msgTypes[7]
+	mi := &file_playviewreply_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -660,7 +660,7 @@ func (x *DashItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DashItem.ProtoReflect.Descriptor instead.
 func (*DashItem) Descriptor() ([]byte, []int) {
-	return file_Response_playviewreply_proto_rawDescGZIP(), []int{7}
+	return file_playviewreply_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *DashItem) GetId() uint32 {
@@ -723,7 +723,7 @@ type StreamItem struct {
 
 func (x *StreamItem) Reset() {
 	*x = StreamItem{}
-	mi := &file_Response_playviewreply_proto_msgTypes[8]
+	mi := &file_playviewreply_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -735,7 +735,7 @@ func (x *StreamItem) String() string {
 func (*StreamItem) ProtoMessage() {}
 
 func (x *StreamItem) ProtoReflect() protoreflect.Message {
-	mi := &file_Response_playviewreply_proto_msgTypes[8]
+	mi := &file_playviewreply_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -748,7 +748,7 @@ func (x *StreamItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamItem.ProtoReflect.Descriptor instead.
 func (*StreamItem) Descriptor() ([]byte, []int) {
-	return file_Response_playviewreply_proto_rawDescGZIP(), []int{8}
+	return file_playviewreply_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *StreamItem) GetStreamInfo() *StreamInfo {
@@ -790,7 +790,7 @@ type StreamInfo struct {
 
 func (x *StreamInfo) Reset() {
 	*x = StreamInfo{}
-	mi := &file_Response_playviewreply_proto_msgTypes[9]
+	mi := &file_playviewreply_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -802,7 +802,7 @@ func (x *StreamInfo) String() string {
 func (*StreamInfo) ProtoMessage() {}
 
 func (x *StreamInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_Response_playviewreply_proto_msgTypes[9]
+	mi := &file_playviewreply_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -815,7 +815,7 @@ func (x *StreamInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamInfo.ProtoReflect.Descriptor instead.
 func (*StreamInfo) Descriptor() ([]byte, []int) {
-	return file_Response_playviewreply_proto_rawDescGZIP(), []int{9}
+	return file_playviewreply_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *StreamInfo) GetQuality() uint32 {
@@ -904,7 +904,7 @@ type DashVideo struct {
 
 func (x *DashVideo) Reset() {
 	*x = DashVideo{}
-	mi := &file_Response_playviewreply_proto_msgTypes[10]
+	mi := &file_playviewreply_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -916,7 +916,7 @@ func (x *DashVideo) String() string {
 func (*DashVideo) ProtoMessage() {}
 
 func (x *DashVideo) ProtoReflect() protoreflect.Message {
-	mi := &file_Response_playviewreply_proto_msgTypes[10]
+	mi := &file_playviewreply_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -929,7 +929,7 @@ func (x *DashVideo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DashVideo.ProtoReflect.Descriptor instead.
 func (*DashVideo) Descriptor() ([]byte, []int) {
-	return file_Response_playviewreply_proto_rawDescGZIP(), []int{10}
+	return file_playviewreply_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *DashVideo) GetBaseUrl() string {
@@ -997,7 +997,7 @@ type SegmentVideo struct {
 
 func (x *SegmentVideo) Reset() {
 	*x = SegmentVideo{}
-	mi := &file_Response_playviewreply_proto_msgTypes[11]
+	mi := &file_playviewreply_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1009,7 +1009,7 @@ func (x *SegmentVideo) String() string {
 func (*SegmentVideo) ProtoMessage() {}
 
 func (x *SegmentVideo) ProtoReflect() protoreflect.Message {
-	mi := &file_Response_playviewreply_proto_msgTypes[11]
+	mi := &file_playviewreply_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1022,7 +1022,7 @@ func (x *SegmentVideo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SegmentVideo.ProtoReflect.Descriptor instead.
 func (*SegmentVideo) Descriptor() ([]byte, []int) {
-	return file_Response_playviewreply_proto_rawDescGZIP(), []int{11}
+	return file_playviewreply_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *SegmentVideo) GetSegment() []*ResponseUrl {
@@ -1043,7 +1043,7 @@ type StreamLimit struct {
 
 func (x *StreamLimit) Reset() {
 	*x = StreamLimit{}
-	mi := &file_Response_playviewreply_proto_msgTypes[12]
+	mi := &file_playviewreply_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1055,7 +1055,7 @@ func (x *StreamLimit) String() string {
 func (*StreamLimit) ProtoMessage() {}
 
 func (x *StreamLimit) ProtoReflect() protoreflect.Message {
-	mi := &file_Response_playviewreply_proto_msgTypes[12]
+	mi := &file_playviewreply_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1068,7 +1068,7 @@ func (x *StreamLimit) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamLimit.ProtoReflect.Descriptor instead.
 func (*StreamLimit) Descriptor() ([]byte, []int) {
-	return file_Response_playviewreply_proto_rawDescGZIP(), []int{12}
+	return file_playviewreply_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *StreamLimit) GetTitle() string {
@@ -1106,7 +1106,7 @@ type ResponseUrl struct {
 
 func (x *ResponseUrl) Reset() {
 	*x = ResponseUrl{}
-	mi := &file_Response_playviewreply_proto_msgTypes[13]
+	mi := &file_playviewreply_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1118,7 +1118,7 @@ func (x *ResponseUrl) String() string {
 func (*ResponseUrl) ProtoMessage() {}
 
 func (x *ResponseUrl) ProtoReflect() protoreflect.Message {
-	mi := &file_Response_playviewreply_proto_msgTypes[13]
+	mi := &file_playviewreply_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1131,7 +1131,7 @@ func (x *ResponseUrl) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResponseUrl.ProtoReflect.Descriptor instead.
 func (*ResponseUrl) Descriptor() ([]byte, []int) {
-	return file_Response_playviewreply_proto_rawDescGZIP(), []int{13}
+	return file_playviewreply_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *ResponseUrl) GetOrder() uint32 {
@@ -1186,7 +1186,7 @@ type RoleAudioProto struct {
 
 func (x *RoleAudioProto) Reset() {
 	*x = RoleAudioProto{}
-	mi := &file_Response_playviewreply_proto_msgTypes[14]
+	mi := &file_playviewreply_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1198,7 +1198,7 @@ func (x *RoleAudioProto) String() string {
 func (*RoleAudioProto) ProtoMessage() {}
 
 func (x *RoleAudioProto) ProtoReflect() protoreflect.Message {
-	mi := &file_Response_playviewreply_proto_msgTypes[14]
+	mi := &file_playviewreply_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1211,7 +1211,7 @@ func (x *RoleAudioProto) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RoleAudioProto.ProtoReflect.Descriptor instead.
 func (*RoleAudioProto) Descriptor() ([]byte, []int) {
-	return file_Response_playviewreply_proto_rawDescGZIP(), []int{14}
+	return file_playviewreply_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *RoleAudioProto) GetAudioMaterialList() []*AudioMaterialProto {
@@ -1234,7 +1234,7 @@ type AudioMaterialProto struct {
 
 func (x *AudioMaterialProto) Reset() {
 	*x = AudioMaterialProto{}
-	mi := &file_Response_playviewreply_proto_msgTypes[15]
+	mi := &file_playviewreply_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1246,7 +1246,7 @@ func (x *AudioMaterialProto) String() string {
 func (*AudioMaterialProto) ProtoMessage() {}
 
 func (x *AudioMaterialProto) ProtoReflect() protoreflect.Message {
-	mi := &file_Response_playviewreply_proto_msgTypes[15]
+	mi := &file_playviewreply_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1259,7 +1259,7 @@ func (x *AudioMaterialProto) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AudioMaterialProto.ProtoReflect.Descriptor instead.
 func (*AudioMaterialProto) Descriptor() ([]byte, []int) {
-	return file_Response_playviewreply_proto_rawDescGZIP(), []int{15}
+	return file_playviewreply_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *AudioMaterialProto) GetAudioId() string {
@@ -1309,7 +1309,7 @@ type PlayDubbingInfo struct {
 
 func (x *PlayDubbingInfo) Reset() {
 	*x = PlayDubbingInfo{}
-	mi := &file_Response_playviewreply_proto_msgTypes[16]
+	mi := &file_playviewreply_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1321,7 +1321,7 @@ func (x *PlayDubbingInfo) String() string {
 func (*PlayDubbingInfo) ProtoMessage() {}
 
 func (x *PlayDubbingInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_Response_playviewreply_proto_msgTypes[16]
+	mi := &file_playviewreply_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1334,7 +1334,7 @@ func (x *PlayDubbingInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PlayDubbingInfo.ProtoReflect.Descriptor instead.
 func (*PlayDubbingInfo) Descriptor() ([]byte, []int) {
-	return file_Response_playviewreply_proto_rawDescGZIP(), []int{16}
+	return file_playviewreply_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *PlayDubbingInfo) GetBackgroundAudio() *AudioMaterialProto {
@@ -1361,7 +1361,7 @@ type PlayExtInfo struct {
 
 func (x *PlayExtInfo) Reset() {
 	*x = PlayExtInfo{}
-	mi := &file_Response_playviewreply_proto_msgTypes[17]
+	mi := &file_playviewreply_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1373,7 +1373,7 @@ func (x *PlayExtInfo) String() string {
 func (*PlayExtInfo) ProtoMessage() {}
 
 func (x *PlayExtInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_Response_playviewreply_proto_msgTypes[17]
+	mi := &file_playviewreply_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1386,7 +1386,7 @@ func (x *PlayExtInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PlayExtInfo.ProtoReflect.Descriptor instead.
 func (*PlayExtInfo) Descriptor() ([]byte, []int) {
-	return file_Response_playviewreply_proto_rawDescGZIP(), []int{17}
+	return file_playviewreply_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *PlayExtInfo) GetPlayDubbingInfo() *PlayDubbingInfo {
@@ -1409,7 +1409,7 @@ type PlayViewReply struct {
 
 func (x *PlayViewReply) Reset() {
 	*x = PlayViewReply{}
-	mi := &file_Response_playviewreply_proto_msgTypes[18]
+	mi := &file_playviewreply_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1421,7 +1421,7 @@ func (x *PlayViewReply) String() string {
 func (*PlayViewReply) ProtoMessage() {}
 
 func (x *PlayViewReply) ProtoReflect() protoreflect.Message {
-	mi := &file_Response_playviewreply_proto_msgTypes[18]
+	mi := &file_playviewreply_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1434,7 +1434,7 @@ func (x *PlayViewReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PlayViewReply.ProtoReflect.Descriptor instead.
 func (*PlayViewReply) Descriptor() ([]byte, []int) {
-	return file_Response_playviewreply_proto_rawDescGZIP(), []int{18}
+	return file_playviewreply_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *PlayViewReply) GetVideoInfo() *VideoInfo {
@@ -1472,11 +1472,11 @@ func (x *PlayViewReply) GetPlayExtInfo() *PlayExtInfo {
 	return nil
 }
 
-var File_Response_playviewreply_proto protoreflect.FileDescriptor
+var File_playviewreply_proto protoreflect.FileDescriptor
 
-const file_Response_playviewreply_proto_rawDesc = "" +
+const file_playviewreply_proto_rawDesc = "" +
 	"\n" +
-	"\x1cResponse/playviewreply.proto\"\x99\x02\n" +
+	"\x13playviewreply.proto\"\x99\x02\n" +
 	"\tVideoInfo\x12\x18\n" +
 	"\aquality\x18\x01 \x01(\rR\aquality\x12\x16\n" +
 	"\x06format\x18\x02 \x01(\tR\x06format\x12\x1e\n" +
@@ -1606,22 +1606,22 @@ const file_Response_playviewreply_proto_rawDesc = "" +
 	"\bplayConf\x18\x02 \x01(\v2\x10.PlayAbilityConfR\bplayConf\x12)\n" +
 	"\bbusiness\x18\x03 \x01(\v2\r.BusinessInfoR\bbusiness\x12\x1c\n" +
 	"\x05event\x18\x04 \x01(\v2\x06.EventR\x05event\x12.\n" +
-	"\vplayExtInfo\x18\a \x01(\v2\f.PlayExtInfoR\vplayExtInfoBWZ>github.com/nilaonai/bbdown-go/internal/core/api/proto/Response\xaa\x02\x14BBDown.Core.Protobuf"
+	"\vplayExtInfo\x18\a \x01(\v2\f.PlayExtInfoR\vplayExtInfoBVZ=github.com/sailist/BBDown-go/internal/core/api/proto/Response\xaa\x02\x14BBDown.Core.Protobuf"
 
 var (
-	file_Response_playviewreply_proto_rawDescOnce sync.Once
-	file_Response_playviewreply_proto_rawDescData []byte
+	file_playviewreply_proto_rawDescOnce sync.Once
+	file_playviewreply_proto_rawDescData []byte
 )
 
-func file_Response_playviewreply_proto_rawDescGZIP() []byte {
-	file_Response_playviewreply_proto_rawDescOnce.Do(func() {
-		file_Response_playviewreply_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_Response_playviewreply_proto_rawDesc), len(file_Response_playviewreply_proto_rawDesc)))
+func file_playviewreply_proto_rawDescGZIP() []byte {
+	file_playviewreply_proto_rawDescOnce.Do(func() {
+		file_playviewreply_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_playviewreply_proto_rawDesc), len(file_playviewreply_proto_rawDesc)))
 	})
-	return file_Response_playviewreply_proto_rawDescData
+	return file_playviewreply_proto_rawDescData
 }
 
-var file_Response_playviewreply_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
-var file_Response_playviewreply_proto_goTypes = []any{
+var file_playviewreply_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_playviewreply_proto_goTypes = []any{
 	(*VideoInfo)(nil),          // 0: VideoInfo
 	(*DolbyItem)(nil),          // 1: DolbyItem
 	(*PlayAbilityConf)(nil),    // 2: PlayAbilityConf
@@ -1642,7 +1642,7 @@ var file_Response_playviewreply_proto_goTypes = []any{
 	(*PlayExtInfo)(nil),        // 17: PlayExtInfo
 	(*PlayViewReply)(nil),      // 18: PlayViewReply
 }
-var file_Response_playviewreply_proto_depIdxs = []int32{
+var file_playviewreply_proto_depIdxs = []int32{
 	8,  // 0: VideoInfo.streamList:type_name -> StreamItem
 	7,  // 1: VideoInfo.dashAudio:type_name -> DashItem
 	1,  // 2: VideoInfo.dolby:type_name -> DolbyItem
@@ -1672,26 +1672,26 @@ var file_Response_playviewreply_proto_depIdxs = []int32{
 	0,  // [0:22] is the sub-list for field type_name
 }
 
-func init() { file_Response_playviewreply_proto_init() }
-func file_Response_playviewreply_proto_init() {
-	if File_Response_playviewreply_proto != nil {
+func init() { file_playviewreply_proto_init() }
+func file_playviewreply_proto_init() {
+	if File_playviewreply_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_Response_playviewreply_proto_rawDesc), len(file_Response_playviewreply_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_playviewreply_proto_rawDesc), len(file_playviewreply_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_Response_playviewreply_proto_goTypes,
-		DependencyIndexes: file_Response_playviewreply_proto_depIdxs,
-		MessageInfos:      file_Response_playviewreply_proto_msgTypes,
+		GoTypes:           file_playviewreply_proto_goTypes,
+		DependencyIndexes: file_playviewreply_proto_depIdxs,
+		MessageInfos:      file_playviewreply_proto_msgTypes,
 	}.Build()
-	File_Response_playviewreply_proto = out.File
-	file_Response_playviewreply_proto_goTypes = nil
-	file_Response_playviewreply_proto_depIdxs = nil
+	File_playviewreply_proto = out.File
+	file_playviewreply_proto_goTypes = nil
+	file_playviewreply_proto_depIdxs = nil
 }

@@ -12,15 +12,15 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/nilaonai/bbdown-go/internal/cli"
-	"github.com/nilaonai/bbdown-go/internal/config"
-	"github.com/nilaonai/bbdown-go/internal/core/entity"
-	"github.com/nilaonai/bbdown-go/internal/core/parser"
-	"github.com/nilaonai/bbdown-go/internal/core/util"
-	"github.com/nilaonai/bbdown-go/internal/danmaku"
-	"github.com/nilaonai/bbdown-go/internal/download"
-	"github.com/nilaonai/bbdown-go/internal/muxer"
-	"github.com/nilaonai/bbdown-go/pkg/httpclient"
+	"github.com/sailist/BBDown-go/internal/cli"
+	"github.com/sailist/BBDown-go/internal/config"
+	"github.com/sailist/BBDown-go/internal/core/entity"
+	"github.com/sailist/BBDown-go/internal/core/parser"
+	"github.com/sailist/BBDown-go/internal/core/util"
+	"github.com/sailist/BBDown-go/internal/danmaku"
+	"github.com/sailist/BBDown-go/internal/download"
+	"github.com/sailist/BBDown-go/internal/muxer"
+	"github.com/sailist/BBDown-go/pkg/httpclient"
 )
 
 // DownloadDeps holds dependencies for DownloadPage, enabling test mocking.

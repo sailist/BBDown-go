@@ -3,8 +3,8 @@ package parser
 import (
 	"net/url"
 
-	"github.com/nilaonai/bbdown-go/internal/config"
-	"github.com/nilaonai/bbdown-go/internal/core/util"
+	"github.com/sailist/BBDown-go/internal/config"
+	"github.com/sailist/BBDown-go/internal/core/util"
 )
 
 // BuildWebPlayurlAPI builds the web playurl API URL.

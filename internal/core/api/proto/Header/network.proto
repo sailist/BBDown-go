@@ -1,6 +1,6 @@
 syntax = "proto2";
 option csharp_namespace = "BBDown.Core.Protobuf";
-option go_package = "github.com/nilaonai/bbdown-go/internal/core/api/proto/Header";
+option go_package = "github.com/sailist/BBDown-go/internal/core/api/proto/Header";
 
 message Network {
     enum TYPE {

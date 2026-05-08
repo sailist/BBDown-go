@@ -4,7 +4,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/nilaonai/bbdown-go/internal/core/api/proto/Response"
+	"github.com/sailist/BBDown-go/internal/core/api/proto/Response"
 )
 
 func TestPackMessageRoundTrip(t *testing.T) {

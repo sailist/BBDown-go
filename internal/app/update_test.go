@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/nilaonai/bbdown-go/pkg/httpclient"
+	"github.com/sailist/BBDown-go/pkg/httpclient"
 )
 
 type mockClient struct {

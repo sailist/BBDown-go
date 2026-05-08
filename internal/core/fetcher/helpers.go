@@ -1,6 +1,6 @@
 package fetcher
 
-import "github.com/nilaonai/bbdown-go/internal/core/entity"
+import "github.com/sailist/BBDown-go/internal/core/entity"
 
 // containsPage reports whether pages contains p using Page.Equal.
 func containsPage(pages []entity.Page, p entity.Page) bool {

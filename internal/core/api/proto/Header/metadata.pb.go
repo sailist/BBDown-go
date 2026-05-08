@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v7.34.1
-// source: Header/metadata.proto
+// source: metadata.proto
 
 package Header
 
@@ -36,7 +36,7 @@ type Metadata struct {
 
 func (x *Metadata) Reset() {
 	*x = Metadata{}
-	mi := &file_Header_metadata_proto_msgTypes[0]
+	mi := &file_metadata_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -48,7 +48,7 @@ func (x *Metadata) String() string {
 func (*Metadata) ProtoMessage() {}
 
 func (x *Metadata) ProtoReflect() protoreflect.Message {
-	mi := &file_Header_metadata_proto_msgTypes[0]
+	mi := &file_metadata_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -61,7 +61,7 @@ func (x *Metadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Metadata.ProtoReflect.Descriptor instead.
 func (*Metadata) Descriptor() ([]byte, []int) {
-	return file_Header_metadata_proto_rawDescGZIP(), []int{0}
+	return file_metadata_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Metadata) GetAccessKey() string {
@@ -113,11 +113,11 @@ func (x *Metadata) GetPlatform() string {
 	return ""
 }
 
-var File_Header_metadata_proto protoreflect.FileDescriptor
+var File_metadata_proto protoreflect.FileDescriptor
 
-const file_Header_metadata_proto_rawDesc = "" +
+const file_metadata_proto_rawDesc = "" +
 	"\n" +
-	"\x15Header/metadata.proto\"\xbc\x01\n" +
+	"\x0emetadata.proto\"\xbc\x01\n" +
 	"\bMetadata\x12\x1c\n" +
 	"\taccessKey\x18\x01 \x01(\tR\taccessKey\x12\x18\n" +
 	"\amobiApp\x18\x02 \x01(\tR\amobiApp\x12\x16\n" +
@@ -125,25 +125,25 @@ const file_Header_metadata_proto_rawDesc = "" +
 	"\x05build\x18\x04 \x01(\x05R\x05build\x12\x18\n" +
 	"\achannel\x18\x05 \x01(\tR\achannel\x12\x14\n" +
 	"\x05buvid\x18\x06 \x01(\tR\x05buvid\x12\x1a\n" +
-	"\bplatform\x18\a \x01(\tR\bplatformBUZ<github.com/nilaonai/bbdown-go/internal/core/api/proto/Header\xaa\x02\x14BBDown.Core.Protobuf"
+	"\bplatform\x18\a \x01(\tR\bplatformBTZ;github.com/sailist/BBDown-go/internal/core/api/proto/Header\xaa\x02\x14BBDown.Core.Protobuf"
 
 var (
-	file_Header_metadata_proto_rawDescOnce sync.Once
-	file_Header_metadata_proto_rawDescData []byte
+	file_metadata_proto_rawDescOnce sync.Once
+	file_metadata_proto_rawDescData []byte
 )
 
-func file_Header_metadata_proto_rawDescGZIP() []byte {
-	file_Header_metadata_proto_rawDescOnce.Do(func() {
-		file_Header_metadata_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_Header_metadata_proto_rawDesc), len(file_Header_metadata_proto_rawDesc)))
+func file_metadata_proto_rawDescGZIP() []byte {
+	file_metadata_proto_rawDescOnce.Do(func() {
+		file_metadata_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_metadata_proto_rawDesc), len(file_metadata_proto_rawDesc)))
 	})
-	return file_Header_metadata_proto_rawDescData
+	return file_metadata_proto_rawDescData
 }
 
-var file_Header_metadata_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
-var file_Header_metadata_proto_goTypes = []any{
+var file_metadata_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_metadata_proto_goTypes = []any{
 	(*Metadata)(nil), // 0: Metadata
 }
-var file_Header_metadata_proto_depIdxs = []int32{
+var file_metadata_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
 	0, // [0:0] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -151,26 +151,26 @@ var file_Header_metadata_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_Header_metadata_proto_init() }
-func file_Header_metadata_proto_init() {
-	if File_Header_metadata_proto != nil {
+func init() { file_metadata_proto_init() }
+func file_metadata_proto_init() {
+	if File_metadata_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_Header_metadata_proto_rawDesc), len(file_Header_metadata_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_metadata_proto_rawDesc), len(file_metadata_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_Header_metadata_proto_goTypes,
-		DependencyIndexes: file_Header_metadata_proto_depIdxs,
-		MessageInfos:      file_Header_metadata_proto_msgTypes,
+		GoTypes:           file_metadata_proto_goTypes,
+		DependencyIndexes: file_metadata_proto_depIdxs,
+		MessageInfos:      file_metadata_proto_msgTypes,
 	}.Build()
-	File_Header_metadata_proto = out.File
-	file_Header_metadata_proto_goTypes = nil
-	file_Header_metadata_proto_depIdxs = nil
+	File_metadata_proto = out.File
+	file_metadata_proto_goTypes = nil
+	file_metadata_proto_depIdxs = nil
 }

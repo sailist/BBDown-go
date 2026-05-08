@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v7.34.1
-// source: Payload/playviewreq.proto
+// source: playviewreq.proto
 
 package Payload
 
@@ -57,11 +57,11 @@ func (x PlayViewReq_CodeType) String() string {
 }
 
 func (PlayViewReq_CodeType) Descriptor() protoreflect.EnumDescriptor {
-	return file_Payload_playviewreq_proto_enumTypes[0].Descriptor()
+	return file_playviewreq_proto_enumTypes[0].Descriptor()
 }
 
 func (PlayViewReq_CodeType) Type() protoreflect.EnumType {
-	return &file_Payload_playviewreq_proto_enumTypes[0]
+	return &file_playviewreq_proto_enumTypes[0]
 }
 
 func (x PlayViewReq_CodeType) Number() protoreflect.EnumNumber {
@@ -80,7 +80,7 @@ func (x *PlayViewReq_CodeType) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use PlayViewReq_CodeType.Descriptor instead.
 func (PlayViewReq_CodeType) EnumDescriptor() ([]byte, []int) {
-	return file_Payload_playviewreq_proto_rawDescGZIP(), []int{0, 0}
+	return file_playviewreq_proto_rawDescGZIP(), []int{0, 0}
 }
 
 type PlayViewReq struct {
@@ -105,7 +105,7 @@ type PlayViewReq struct {
 
 func (x *PlayViewReq) Reset() {
 	*x = PlayViewReq{}
-	mi := &file_Payload_playviewreq_proto_msgTypes[0]
+	mi := &file_playviewreq_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -117,7 +117,7 @@ func (x *PlayViewReq) String() string {
 func (*PlayViewReq) ProtoMessage() {}
 
 func (x *PlayViewReq) ProtoReflect() protoreflect.Message {
-	mi := &file_Payload_playviewreq_proto_msgTypes[0]
+	mi := &file_playviewreq_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -130,7 +130,7 @@ func (x *PlayViewReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PlayViewReq.ProtoReflect.Descriptor instead.
 func (*PlayViewReq) Descriptor() ([]byte, []int) {
-	return file_Payload_playviewreq_proto_rawDescGZIP(), []int{0}
+	return file_playviewreq_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *PlayViewReq) GetEpId() int64 {
@@ -231,11 +231,11 @@ func (x *PlayViewReq) GetRoomId() int64 {
 	return 0
 }
 
-var File_Payload_playviewreq_proto protoreflect.FileDescriptor
+var File_playviewreq_proto protoreflect.FileDescriptor
 
-const file_Payload_playviewreq_proto_rawDesc = "" +
+const file_playviewreq_proto_rawDesc = "" +
 	"\n" +
-	"\x19Payload/playviewreq.proto\"\xcf\x03\n" +
+	"\x11playviewreq.proto\"\xcf\x03\n" +
 	"\vPlayViewReq\x12\x12\n" +
 	"\x04epId\x18\x01 \x01(\x03R\x04epId\x12\x10\n" +
 	"\x03cid\x18\x02 \x01(\x03R\x03cid\x12\x0e\n" +
@@ -257,27 +257,27 @@ const file_Payload_playviewreq_proto_rawDesc = "" +
 	"\x06NOCODE\x10\x00\x12\v\n" +
 	"\aCODE264\x10\x01\x12\v\n" +
 	"\aCODE265\x10\x02\x12\v\n" +
-	"\aCODEAV1\x10\x03BVZ=github.com/nilaonai/bbdown-go/internal/core/api/proto/Payload\xaa\x02\x14BBDown.Core.Protobuf"
+	"\aCODEAV1\x10\x03BUZ<github.com/sailist/BBDown-go/internal/core/api/proto/Payload\xaa\x02\x14BBDown.Core.Protobuf"
 
 var (
-	file_Payload_playviewreq_proto_rawDescOnce sync.Once
-	file_Payload_playviewreq_proto_rawDescData []byte
+	file_playviewreq_proto_rawDescOnce sync.Once
+	file_playviewreq_proto_rawDescData []byte
 )
 
-func file_Payload_playviewreq_proto_rawDescGZIP() []byte {
-	file_Payload_playviewreq_proto_rawDescOnce.Do(func() {
-		file_Payload_playviewreq_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_Payload_playviewreq_proto_rawDesc), len(file_Payload_playviewreq_proto_rawDesc)))
+func file_playviewreq_proto_rawDescGZIP() []byte {
+	file_playviewreq_proto_rawDescOnce.Do(func() {
+		file_playviewreq_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_playviewreq_proto_rawDesc), len(file_playviewreq_proto_rawDesc)))
 	})
-	return file_Payload_playviewreq_proto_rawDescData
+	return file_playviewreq_proto_rawDescData
 }
 
-var file_Payload_playviewreq_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_Payload_playviewreq_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
-var file_Payload_playviewreq_proto_goTypes = []any{
+var file_playviewreq_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_playviewreq_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_playviewreq_proto_goTypes = []any{
 	(PlayViewReq_CodeType)(0), // 0: PlayViewReq.CodeType
 	(*PlayViewReq)(nil),       // 1: PlayViewReq
 }
-var file_Payload_playviewreq_proto_depIdxs = []int32{
+var file_playviewreq_proto_depIdxs = []int32{
 	0, // 0: PlayViewReq.preferCodecType:type_name -> PlayViewReq.CodeType
 	1, // [1:1] is the sub-list for method output_type
 	1, // [1:1] is the sub-list for method input_type
@@ -286,27 +286,27 @@ var file_Payload_playviewreq_proto_depIdxs = []int32{
 	0, // [0:1] is the sub-list for field type_name
 }
 
-func init() { file_Payload_playviewreq_proto_init() }
-func file_Payload_playviewreq_proto_init() {
-	if File_Payload_playviewreq_proto != nil {
+func init() { file_playviewreq_proto_init() }
+func file_playviewreq_proto_init() {
+	if File_playviewreq_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_Payload_playviewreq_proto_rawDesc), len(file_Payload_playviewreq_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_playviewreq_proto_rawDesc), len(file_playviewreq_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_Payload_playviewreq_proto_goTypes,
-		DependencyIndexes: file_Payload_playviewreq_proto_depIdxs,
-		EnumInfos:         file_Payload_playviewreq_proto_enumTypes,
-		MessageInfos:      file_Payload_playviewreq_proto_msgTypes,
+		GoTypes:           file_playviewreq_proto_goTypes,
+		DependencyIndexes: file_playviewreq_proto_depIdxs,
+		EnumInfos:         file_playviewreq_proto_enumTypes,
+		MessageInfos:      file_playviewreq_proto_msgTypes,
 	}.Build()
-	File_Payload_playviewreq_proto = out.File
-	file_Payload_playviewreq_proto_goTypes = nil
-	file_Payload_playviewreq_proto_depIdxs = nil
+	File_playviewreq_proto = out.File
+	file_playviewreq_proto_goTypes = nil
+	file_playviewreq_proto_depIdxs = nil
 }

@@ -3,7 +3,7 @@ package entity
 import (
 	"testing"
 
-	"github.com/nilaonai/bbdown-go/pkg/bvconv"
+	"github.com/sailist/BBDown-go/pkg/bvconv"
 )
 
 func TestPageEqual(t *testing.T) {

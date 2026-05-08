@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/nilaonai/bbdown-go/internal/core/api/proto/Response"
+	"github.com/sailist/BBDown-go/internal/core/api/proto/Response"
 )
 
 // PackMessage gzip-compresses the input and prepends a 5-byte gRPC header:

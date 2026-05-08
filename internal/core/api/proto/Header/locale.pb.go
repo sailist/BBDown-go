@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v7.34.1
-// source: Header/locale.proto
+// source: locale.proto
 
 package Header
 
@@ -31,7 +31,7 @@ type Locale struct {
 
 func (x *Locale) Reset() {
 	*x = Locale{}
-	mi := &file_Header_locale_proto_msgTypes[0]
+	mi := &file_locale_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -43,7 +43,7 @@ func (x *Locale) String() string {
 func (*Locale) ProtoMessage() {}
 
 func (x *Locale) ProtoReflect() protoreflect.Message {
-	mi := &file_Header_locale_proto_msgTypes[0]
+	mi := &file_locale_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -56,7 +56,7 @@ func (x *Locale) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Locale.ProtoReflect.Descriptor instead.
 func (*Locale) Descriptor() ([]byte, []int) {
-	return file_Header_locale_proto_rawDescGZIP(), []int{0}
+	return file_locale_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Locale) GetCLocale() *Locale_LocaleIds {
@@ -84,7 +84,7 @@ type Locale_LocaleIds struct {
 
 func (x *Locale_LocaleIds) Reset() {
 	*x = Locale_LocaleIds{}
-	mi := &file_Header_locale_proto_msgTypes[1]
+	mi := &file_locale_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -96,7 +96,7 @@ func (x *Locale_LocaleIds) String() string {
 func (*Locale_LocaleIds) ProtoMessage() {}
 
 func (x *Locale_LocaleIds) ProtoReflect() protoreflect.Message {
-	mi := &file_Header_locale_proto_msgTypes[1]
+	mi := &file_locale_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -109,7 +109,7 @@ func (x *Locale_LocaleIds) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Locale_LocaleIds.ProtoReflect.Descriptor instead.
 func (*Locale_LocaleIds) Descriptor() ([]byte, []int) {
-	return file_Header_locale_proto_rawDescGZIP(), []int{0, 0}
+	return file_locale_proto_rawDescGZIP(), []int{0, 0}
 }
 
 func (x *Locale_LocaleIds) GetLanguage() string {
@@ -133,37 +133,37 @@ func (x *Locale_LocaleIds) GetRegion() string {
 	return ""
 }
 
-var File_Header_locale_proto protoreflect.FileDescriptor
+var File_locale_proto protoreflect.FileDescriptor
 
-const file_Header_locale_proto_rawDesc = "" +
+const file_locale_proto_rawDesc = "" +
 	"\n" +
-	"\x13Header/locale.proto\"\xbb\x01\n" +
+	"\flocale.proto\"\xbb\x01\n" +
 	"\x06Locale\x12+\n" +
 	"\acLocale\x18\x01 \x01(\v2\x11.Locale.LocaleIdsR\acLocale\x12+\n" +
 	"\asLocale\x18\x02 \x01(\v2\x11.Locale.LocaleIdsR\asLocale\x1aW\n" +
 	"\tLocaleIds\x12\x1a\n" +
 	"\blanguage\x18\x01 \x01(\tR\blanguage\x12\x16\n" +
 	"\x06script\x18\x02 \x01(\tR\x06script\x12\x16\n" +
-	"\x06region\x18\x03 \x01(\tR\x06regionBUZ<github.com/nilaonai/bbdown-go/internal/core/api/proto/Header\xaa\x02\x14BBDown.Core.Protobuf"
+	"\x06region\x18\x03 \x01(\tR\x06regionBTZ;github.com/sailist/BBDown-go/internal/core/api/proto/Header\xaa\x02\x14BBDown.Core.Protobuf"
 
 var (
-	file_Header_locale_proto_rawDescOnce sync.Once
-	file_Header_locale_proto_rawDescData []byte
+	file_locale_proto_rawDescOnce sync.Once
+	file_locale_proto_rawDescData []byte
 )
 
-func file_Header_locale_proto_rawDescGZIP() []byte {
-	file_Header_locale_proto_rawDescOnce.Do(func() {
-		file_Header_locale_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_Header_locale_proto_rawDesc), len(file_Header_locale_proto_rawDesc)))
+func file_locale_proto_rawDescGZIP() []byte {
+	file_locale_proto_rawDescOnce.Do(func() {
+		file_locale_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_locale_proto_rawDesc), len(file_locale_proto_rawDesc)))
 	})
-	return file_Header_locale_proto_rawDescData
+	return file_locale_proto_rawDescData
 }
 
-var file_Header_locale_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_Header_locale_proto_goTypes = []any{
+var file_locale_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_locale_proto_goTypes = []any{
 	(*Locale)(nil),           // 0: Locale
 	(*Locale_LocaleIds)(nil), // 1: Locale.LocaleIds
 }
-var file_Header_locale_proto_depIdxs = []int32{
+var file_locale_proto_depIdxs = []int32{
 	1, // 0: Locale.cLocale:type_name -> Locale.LocaleIds
 	1, // 1: Locale.sLocale:type_name -> Locale.LocaleIds
 	2, // [2:2] is the sub-list for method output_type
@@ -173,26 +173,26 @@ var file_Header_locale_proto_depIdxs = []int32{
 	0, // [0:2] is the sub-list for field type_name
 }
 
-func init() { file_Header_locale_proto_init() }
-func file_Header_locale_proto_init() {
-	if File_Header_locale_proto != nil {
+func init() { file_locale_proto_init() }
+func file_locale_proto_init() {
+	if File_locale_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_Header_locale_proto_rawDesc), len(file_Header_locale_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_locale_proto_rawDesc), len(file_locale_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_Header_locale_proto_goTypes,
-		DependencyIndexes: file_Header_locale_proto_depIdxs,
-		MessageInfos:      file_Header_locale_proto_msgTypes,
+		GoTypes:           file_locale_proto_goTypes,
+		DependencyIndexes: file_locale_proto_depIdxs,
+		MessageInfos:      file_locale_proto_msgTypes,
 	}.Build()
-	File_Header_locale_proto = out.File
-	file_Header_locale_proto_goTypes = nil
-	file_Header_locale_proto_depIdxs = nil
+	File_locale_proto = out.File
+	file_locale_proto_goTypes = nil
+	file_locale_proto_depIdxs = nil
 }

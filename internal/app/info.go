@@ -12,12 +12,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/nilaonai/bbdown-go/internal/cli"
-	"github.com/nilaonai/bbdown-go/internal/core/entity"
-	"github.com/nilaonai/bbdown-go/internal/core/fetcher"
-	"github.com/nilaonai/bbdown-go/internal/core/util"
-	"github.com/nilaonai/bbdown-go/pkg/bvconv"
-	"github.com/nilaonai/bbdown-go/pkg/httpclient"
+	"github.com/sailist/BBDown-go/internal/cli"
+	"github.com/sailist/BBDown-go/internal/core/entity"
+	"github.com/sailist/BBDown-go/internal/core/fetcher"
+	"github.com/sailist/BBDown-go/internal/core/util"
+	"github.com/sailist/BBDown-go/pkg/bvconv"
+	"github.com/sailist/BBDown-go/pkg/httpclient"
 )
 
 // Deps holds dependencies for GetVideoInfo, enabling test mocking.

@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nilaonai/bbdown-go/internal/config"
-	"github.com/nilaonai/bbdown-go/internal/core/entity"
-	"github.com/nilaonai/bbdown-go/pkg/httpclient"
+	"github.com/sailist/BBDown-go/internal/config"
+	"github.com/sailist/BBDown-go/internal/core/entity"
+	"github.com/sailist/BBDown-go/pkg/httpclient"
 )
 
 // BangumiFetcher fetches video metadata for bangumi (ep:) IDs.

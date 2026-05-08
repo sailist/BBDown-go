@@ -3,7 +3,7 @@ package parser
 import (
 	"testing"
 
-	"github.com/nilaonai/bbdown-go/internal/core/entity"
+	"github.com/sailist/BBDown-go/internal/core/entity"
 )
 
 func TestParseClipInfoList(t *testing.T) {

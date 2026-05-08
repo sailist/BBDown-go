@@ -13,8 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nilaonai/bbdown-go/internal/core/entity"
-	"github.com/nilaonai/bbdown-go/internal/core/util"
+	"github.com/sailist/BBDown-go/internal/core/entity"
+	"github.com/sailist/BBDown-go/internal/core/util"
 )
 
 // execCommandContext is a package-level variable to allow mocking in tests.

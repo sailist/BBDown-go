@@ -39,20 +39,20 @@ A Go rewrite of [BBDown](https://github.com/nilaoda/BBDown), a command-line Bili
 ### Build from source
 
 ```bash
-go install github.com/nilaonai/bbdown-go/cmd/bbdown@latest
+go install github.com/sailist/BBDown-go/cmd/bbdown@latest
 ```
 
 Or clone and build manually:
 
 ```bash
-git clone https://github.com/nilaonai/bbdown-go.git
+git clone https://github.com/sailist/BBDown-go.git
 cd bbdown-go
 go build -o bbdown ./cmd/bbdown
 ```
 
 ### Download release
 
-Check the [Releases](https://github.com/nilaonai/bbdown-go/releases) page for pre-built binaries.
+Check the [Releases](https://github.com/sailist/BBDown-go/releases) page for pre-built binaries.
 
 ---
 
@@ -167,7 +167,7 @@ Run `bbdown --help` for the full list.
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/nilaonai/bbdown-go.git
+git clone https://github.com/sailist/BBDown-go.git
 cd bbdown-go
 
 # 2. Run tests

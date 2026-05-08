@@ -3,7 +3,7 @@ package entity
 import (
 	"strconv"
 
-	"github.com/nilaonai/bbdown-go/pkg/bvconv"
+	"github.com/sailist/BBDown-go/pkg/bvconv"
 )
 
 // Page represents a video page (episode/part).

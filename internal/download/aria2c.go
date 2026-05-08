@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/nilaonai/bbdown-go/internal/config"
+	"github.com/sailist/BBDown-go/internal/config"
 )
 
 var execCommandContext = exec.CommandContext

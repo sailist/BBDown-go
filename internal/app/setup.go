@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/nilaonai/bbdown-go/internal/cli"
-	"github.com/nilaonai/bbdown-go/internal/config"
-	"github.com/nilaonai/bbdown-go/internal/muxer"
+	"github.com/sailist/BBDown-go/internal/cli"
+	"github.com/sailist/BBDown-go/internal/config"
+	"github.com/sailist/BBDown-go/internal/muxer"
 )
 
 // WorkConfig holds the result of SetupWork.

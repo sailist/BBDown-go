@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nilaonai/bbdown-go/internal/core/entity"
-	"github.com/nilaonai/bbdown-go/internal/core/util"
+	"github.com/sailist/BBDown-go/internal/core/entity"
+	"github.com/sailist/BBDown-go/internal/core/util"
 )
 
 var infoRegex = regexp.MustCompile(`<([\w:\-.]+?)>`)

@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/nilaonai/bbdown-go/internal/cli"
+	"github.com/sailist/BBDown-go/internal/cli"
 )
 
 func TestPanicRecovery(t *testing.T) {

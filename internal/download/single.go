@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/nilaonai/bbdown-go/internal/config"
-	"github.com/nilaonai/bbdown-go/pkg/httpclient"
+	"github.com/sailist/BBDown-go/internal/config"
+	"github.com/sailist/BBDown-go/pkg/httpclient"
 )
 
 // SingleDownloader performs single-threaded HTTP downloads with Range support.

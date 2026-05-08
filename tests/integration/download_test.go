@@ -14,13 +14,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/nilaonai/bbdown-go/internal/app"
-	"github.com/nilaonai/bbdown-go/internal/cli"
-	"github.com/nilaonai/bbdown-go/internal/core/fetcher"
-	"github.com/nilaonai/bbdown-go/internal/core/parser"
-	"github.com/nilaonai/bbdown-go/internal/download"
-	"github.com/nilaonai/bbdown-go/internal/muxer"
-	"github.com/nilaonai/bbdown-go/pkg/httpclient"
+	"github.com/sailist/BBDown-go/internal/app"
+	"github.com/sailist/BBDown-go/internal/cli"
+	"github.com/sailist/BBDown-go/internal/core/fetcher"
+	"github.com/sailist/BBDown-go/internal/core/parser"
+	"github.com/sailist/BBDown-go/internal/download"
+	"github.com/sailist/BBDown-go/internal/muxer"
+	"github.com/sailist/BBDown-go/pkg/httpclient"
 )
 
 // createMockBinary writes a shell script that acts as a mock external binary.

@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"testing"
 
-	"github.com/nilaonai/bbdown-go/internal/config"
+	"github.com/sailist/BBDown-go/internal/config"
 )
 
 func TestDownloaderInterface(t *testing.T) {

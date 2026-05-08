@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/nilaonai/bbdown-go/internal/core/entity"
+	"github.com/sailist/BBDown-go/internal/core/entity"
 )
 
 // clipInfoItem represents a single item in the clip_info_list array.

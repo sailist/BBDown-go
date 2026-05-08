@@ -7,8 +7,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/nilaonai/bbdown-go/internal/config"
-	"github.com/nilaonai/bbdown-go/pkg/httpclient"
+	"github.com/sailist/BBDown-go/internal/config"
+	"github.com/sailist/BBDown-go/pkg/httpclient"
 )
 
 type mockClient struct{}

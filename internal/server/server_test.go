@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/nilaonai/bbdown-go/internal/config"
+	"github.com/sailist/BBDown-go/internal/config"
 )
 
 func setupTestServer() *Server {

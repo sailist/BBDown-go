@@ -80,4 +80,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - HTTP connection pool tuning
   - Download concurrency limit with semaphore
 
-[0.1.0]: https://github.com/nilaonai/bbdown-go/releases/tag/v0.1.0
+[0.1.0]: https://github.com/sailist/BBDown-go/releases/tag/v0.1.0
