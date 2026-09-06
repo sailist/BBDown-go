@@ -352,14 +352,21 @@ func downloadPageBody(
 
 		// Download tracks
 		var videoPath, audioPath string
+		saveName := filepath.Base(savePath)
+		var saveNameWithoutExt string
+		if strings.HasSuffix(saveName, ".mp4") {
+			saveNameWithoutExt = saveName[:len(saveName)-4]
+		} else {
+			saveNameWithoutExt = saveName
+		}
 		if selectedVideo != nil {
-			videoPath = fmt.Sprintf("%s/%s.m4v", p.Aid, p.Aid)
+			videoPath = fmt.Sprintf("%s/%s.m4v", p.Aid, saveNameWithoutExt)
 			if err := downloadTrack(ctx, deps, selectedVideo.BaseUrl, videoPath, opt); err != nil {
 				return fmt.Errorf("download video: %w", err)
 			}
 		}
 		if selectedAudio != nil {
-			audioPath = fmt.Sprintf("%s/%s.m4a", p.Aid, p.Aid)
+			audioPath = fmt.Sprintf("%s/%s.m4a", p.Aid, saveNameWithoutExt)
 			if err := downloadTrack(ctx, deps, selectedAudio.BaseUrl, audioPath, opt); err != nil {
 				return fmt.Errorf("download audio: %w", err)
 			}
